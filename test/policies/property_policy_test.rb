@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class PropertyPolicyTest < ActiveSupport::TestCase
   def test_scope
