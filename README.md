@@ -3,9 +3,11 @@
 Hestia is a premium Ruby on Rails application designed for comprehensive property management. Named after the Greek goddess of the hearth and home, the platform provides a streamlined experience for agents (gestores), property owners, and tenants.
 
 ## 🏛️ Project Vision
+
 Hestia aims to digitalize the real estate cycle: from property listing and tenant onboarding to contract management and payment tracking, all within a modern and user-friendly interface.
 
 ## 🚀 Key Features
+
 - **Role-Based Access Control**:
   - **Admin**: Full visibility and management across all companies and properties.
   - **Gestor (Real Estate Agent)**: Manage properties, tenants, and contracts for specifically assigned companies.
@@ -16,6 +18,7 @@ Hestia aims to digitalize the real estate cycle: from property listing and tenan
 - **Premium UI/UX**: Built with Bootstrap, Lucide Icons, and a custom "Hestia Gold" theme for a professional look and feel.
 
 ## 🛠️ Technology Stack
+
 - **Framework**: Ruby on Rails 8.1.2
 - **Database**: PostgreSQL
 - **Authentication**: Devise
@@ -27,41 +30,55 @@ Hestia aims to digitalize the real estate cycle: from property listing and tenan
 ## ⚙️ Getting Started
 
 ### Prerequisites
-- Ruby 3.2.2+
+
+- Ruby 3.4.1+
 - PostgreSQL
 - Node.js & npm/yarn
 
 ### Installation
-1.  **Clone the repository**:
+
+1. **Clone the repository**:
+
     ```bash
     git clone <repository-url>
     cd hestia
     ```
-2.  **Install dependencies**:
+
+2. **Install dependencies**:
+
     ```bash
     bundle install
     npm install
     ```
-3.  **Setup Database**:
+
+3. **Setup Database**:
+
     ```bash
     rails db:setup
     ```
-4.  **Compile Assets**:
+
+4. **Compile Assets**:
+
     ```bash
     npm run build:css
     ```
-5.  **Run the Server**:
+
+5. **Run the Server**:
+
     ```bash
     ./bin/dev
     ```
 
 ### Demo Credentials (from Seeds)
+
 - **Admin**: `admin@hestia.com` / `password`
 - **Gestor**: `gestor@hestia.com` / `password`
 - **Tenant**: `inquilino@hestia.com` / `password`
 
 ## 🧪 Testing
+
 The project includes System Tests for critical flows. Run them using:
+
 ```bash
 rails test:system
 ```
