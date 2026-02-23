@@ -1,38 +1,39 @@
 require "test_helper"
 
 class PropertiesControllerTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+
+  setup do
+    @user = users(:gestor)
+    @property = properties(:one) # I'll need to define this in fixtures
+    sign_in @user
+  end
+
   test "should get index" do
-    get properties_index_url
+    get properties_url
     assert_response :success
   end
 
   test "should get show" do
-    get properties_show_url
+    get property_url(@property)
     assert_response :success
   end
 
   test "should get new" do
-    get properties_new_url
-    assert_response :success
-  end
-
-  test "should get create" do
-    get properties_create_url
+    get new_property_url
     assert_response :success
   end
 
   test "should get edit" do
-    get properties_edit_url
+    get edit_property_url(@property)
     assert_response :success
   end
 
-  test "should get update" do
-    get properties_update_url
-    assert_response :success
-  end
+  test "should destroy property" do
+    assert_difference("Property.count", -1) do
+      delete property_url(@property)
+    end
 
-  test "should get destroy" do
-    get properties_destroy_url
-    assert_response :success
+    assert_redirected_to properties_url
   end
 end

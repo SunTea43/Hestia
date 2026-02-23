@@ -1,1 +1,7 @@
-# Empty
+one:
+  property: one
+  tenant: inquilino
+  start_date: <%= Date.today %>
+  end_date: <%= 1.year.from_now.to_date %>
+  tenant_income: 3000000
+  co_debtor_info: "Pepito Perez"

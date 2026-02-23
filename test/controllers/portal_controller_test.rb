@@ -1,6 +1,14 @@
 require "test_helper"
 
 class PortalControllerTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+
+  setup do
+    @user = users(:inquilino)
+    @contract = contracts(:one)
+    sign_in @user
+  end
+
   test "should get dashboard" do
     get portal_dashboard_url
     assert_response :success
@@ -22,7 +30,7 @@ class PortalControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get signup_contract" do
-    get portal_signup_contract_url
+    get portal_signup_contract_url(@contract)
     assert_response :success
   end
 end

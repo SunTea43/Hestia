@@ -1,23 +1,26 @@
 require "test_helper"
 
 class ContractsControllerTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+
+  setup do
+    @user = users(:gestor)
+    @contract = contracts(:one)
+    sign_in @user
+  end
+
   test "should get index" do
-    get contracts_index_url
+    get contracts_url
     assert_response :success
   end
 
   test "should get new" do
-    get contracts_new_url
-    assert_response :success
-  end
-
-  test "should get create" do
-    get contracts_create_url
+    get new_contract_url
     assert_response :success
   end
 
   test "should get show" do
-    get contracts_show_url
+    get contract_url(@contract)
     assert_response :success
   end
 end

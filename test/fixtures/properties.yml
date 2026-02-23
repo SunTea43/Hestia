@@ -1,1 +1,9 @@
-# Empty
+one:
+  company: hestia
+  address: "Calle 1 # 2-3"
+  area: 50.0
+  property_type: "Apartamento"
+  category: 0
+  price: 1000000
+  has_elevator: true
+  admin_fee_included: true
