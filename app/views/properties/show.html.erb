@@ -1,0 +1,116 @@
+<div class="pt-3">
+  <div class="d-flex align-items-center gap-2 mb-4">
+    <%= link_to properties_path, class: "text-decoration-none text-muted" do %>
+      <%= lucide_icon "arrow-left", size: 20 %>
+    <% end %>
+    <h1 class="fw-bold mb-0">Detalles del Inmueble</h1>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+        <div class="bg-light d-flex align-items-center justify-content-center py-5" style="min-height: 300px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+          <%= lucide_icon "home", size: 120, class: "text-hestia-gold opacity-25" %>
+        </div>
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <span class="badge <%= @property.rent? ? 'bg-primary' : 'bg-success' %> rounded-pill px-3 py-2 mb-2">
+                <%= @property.category.capitalize %>
+              </span>
+              <h2 class="fw-bold text-hestia-dark"><%= @property.address %></h2>
+              <p class="text-muted d-flex align-items-center gap-1">
+                <%= lucide_icon "map-pin", size: 18 %>
+                <%= @property.company.name %> • <%= @property.property_type %>
+              </p>
+            </div>
+            <div class="text-end">
+              <h1 class="fw-bold text-hestia-dark">$<%= number_with_delimiter(@property.price) %></h1>
+              <% if @property.rent? %>
+                <small class="text-muted"><%= @property.admin_fee_included ? 'Incluye administración' : '+ Cuota de administración' %></small>
+              <% end %>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <div class="row text-center g-3">
+            <div class="col-4 col-md-2">
+              <div class="p-3 bg-light rounded-4">
+                <%= lucide_icon "move", class: "text-muted mb-2" %>
+                <div class="fw-bold"><%= @property.area %> m²</div>
+                <small class="text-muted d-block">Área</small>
+              </div>
+            </div>
+            <div class="col-4 col-md-2">
+              <div class="p-3 bg-light rounded-4">
+                <%= lucide_icon "arrow-up", class: "text-muted mb-2" %>
+                <div class="fw-bold"><%= @property.has_elevator ? 'Sí' : 'No' %></div>
+                <small class="text-muted d-block">Ascensor</small>
+              </div>
+            </div>
+            <div class="col-4 col-md-2">
+              <div class="p-3 bg-light rounded-4">
+                <%= lucide_icon "shield", class: "text-muted mb-2" %>
+                <div class="fw-bold">Privado</div>
+                <small class="text-muted d-block">Seguridad</small>
+              </div>
+            </div>
+          </div>
+
+          <h5 class="fw-bold mt-5 mb-3">Descripción</h5>
+          <p class="text-muted lead" style="white-space: pre-wrap;"><%= @property.description %></p>
+
+          <h5 class="fw-bold mt-4 mb-3">Zonas Comunes</h5>
+          <p class="text-muted"><%= @property.common_areas %></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+        <h5 class="fw-bold mb-4">Acciones</h5>
+        <div class="d-grid gap-2">
+          <%= link_to edit_property_path(@property), class: "btn btn-outline-warning py-2 rounded-3 d-flex align-items-center justify-content-center gap-2" do %>
+            <%= lucide_icon "edit-3", size: 18 %>
+            Editar Inmueble
+          <% end %>
+          
+          <button class="btn btn-hestia py-2 rounded-3 d-flex align-items-center justify-content-center gap-2">
+            <%= lucide_icon "share-2", size: 18 %>
+            Compartir
+          </button>
+
+          <hr>
+
+          <%= button_to @property, method: :delete, data: { confirm: "¿Estás seguro de eliminar este inmueble?" }, class: "btn btn-outline-danger w-100 py-2 rounded-3 d-flex align-items-center justify-content-center gap-2" do %>
+            <%= lucide_icon "trash-2", size: 18 %>
+            Eliminar
+          <% end %>
+        </div>
+      </div>
+
+      <% if @property.rent? %>
+        <div class="card border-0 shadow-sm rounded-4 p-4">
+          <h5 class="fw-bold mb-4">Inquilino Actual</h5>
+          <% if @property.contracts.any? %>
+            <% contract = @property.contracts.last %>
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="bg-primary bg-opacity-10 p-2 rounded-circle">
+                <%= lucide_icon "user", class: "text-primary" %>
+              </div>
+              <div>
+                <h6 class="fw-bold mb-0"><%= contract.tenant.name %></h6>
+                <small class="text-muted">Desde: <%= contract.start_date.strftime("%d/%m/%Y") %></small>
+              </div>
+            </div>
+            <%= link_to "Ver Contrato", "#", class: "btn btn-light w-100 rounded-3" %>
+          <% else %>
+            <p class="text-muted small">Este inmueble no tiene un contrato de arrendamiento activo.</p>
+            <button class="btn btn-outline-primary w-100 rounded-3">Vincular Inquilino</button>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

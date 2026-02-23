@@ -1,0 +1,52 @@
+<div class="row pt-3 justify-content-center">
+  <div class="col-lg-6">
+    <div class="d-flex align-items-center gap-2 mb-4">
+      <%= link_to tenants_path, class: "text-decoration-none text-muted" do %>
+        <%= lucide_icon "arrow-left", size: 20 %>
+      <% end %>
+      <h1 class="fw-bold mb-0">Registrar Inquilino</h1>
+    </div>
+
+    <%= form_with(model: @tenant, url: tenants_path, class: "card border-0 shadow-sm p-4 rounded-4") do |f| %>
+      <% if @tenant.errors.any? %>
+        <div class="alert alert-danger mb-4 rounded-3 border-0">
+          <ul class="mb-0">
+            <% @tenant.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="mb-3">
+        <%= f.label :name, "Nombre Completo", class: "form-label fw-bold" %>
+        <%= f.text_field :name, class: "form-control rounded-3 p-2", required: true %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :email, "Correo Electrónico", class: "form-label fw-bold" %>
+        <%= f.email_field :email, class: "form-control rounded-3 p-2", required: true %>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <%= f.label :document_number, "Número de Documento", class: "form-label fw-bold" %>
+          <%= f.text_field :document_number, class: "form-control rounded-3 p-2", required: true %>
+        </div>
+        <div class="col-md-6">
+          <%= f.label :birth_date, "Fecha de Nacimiento", class: "form-label fw-bold" %>
+          <%= f.date_field :birth_date, class: "form-control rounded-3 p-2" %>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :phone, "Teléfono de Contacto", class: "form-label fw-bold" %>
+        <%= f.text_field :phone, class: "form-control rounded-3 p-2" %>
+      </div>
+
+      <div class="mt-4">
+        <%= f.submit "Registrar Inquilino", class: "btn btn-hestia w-100 py-3 rounded-3 shadow-sm" %>
+      </div>
+    <% end %>
+  </div>
+</div>

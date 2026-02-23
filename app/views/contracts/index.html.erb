@@ -1,0 +1,66 @@
+<div class="d-flex justify-content-between align-items-center mb-4 pt-3">
+  <div>
+    <h1 class="fw-bold mb-0 text-dark">Contratos</h1>
+    <p class="text-muted">Lista de acuerdos de arrendamiento activos</p>
+  </div>
+  <%= link_to new_contract_path, class: "btn btn-hestia d-flex align-items-center gap-2 px-4 py-2 rounded-3 shadow-sm" do %>
+    <%= lucide_icon "plus", size: 20 %>
+    Nuevo Contrato
+  <% end %>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="bg-light">
+        <tr>
+          <th class="px-4 py-3">Inmueble</th>
+          <th class="py-3">Inquilino</th>
+          <th class="py-3">Periodo</th>
+          <th class="py-3">Monto</th>
+          <th class="py-3 text-end px-4">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @contracts.each do |contract| %>
+          <tr>
+            <td class="px-4">
+              <div class="fw-bold text-dark"><%= contract.property.address %></div>
+              <small class="text-muted"><%= contract.property.property_type %></small>
+            </td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="bg-primary bg-opacity-10 p-1 rounded-circle">
+                  <%= lucide_icon "user", size: 14, class: "text-primary" %>
+                </div>
+                <span><%= contract.tenant.name %></span>
+              </div>
+            </td>
+            <td>
+              <div class="small">
+                <span class="text-success"><%= contract.start_date.strftime("%d/%m/%Y") %></span>
+                <span class="text-muted mx-1">→</span>
+                <span class="text-danger"><%= contract.end_date&.strftime("%d/%m/%Y") || 'Indefinido' %></span>
+              </div>
+            </td>
+            <td>
+              <div class="fw-bold text-dark">$<%= number_with_delimiter(contract.property.price) %></div>
+            </td>
+            <td class="text-end px-4">
+              <%= link_to "#", class: "btn btn-outline-primary btn-sm rounded-3 px-3" do %>
+                Ver Detalles
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+        <% if @contracts.empty? %>
+          <tr>
+            <td colspan="5" class="text-center py-5 text-muted">
+              No hay contratos registrados.
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

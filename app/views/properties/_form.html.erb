@@ -1,0 +1,73 @@
+<%= form_with(model: property, class: "card border-0 shadow-sm p-4 rounded-4") do |f| %>
+  <% if property.errors.any? %>
+    <div class="alert alert-danger mb-4 rounded-3 border-0">
+      <h6 class="fw-bold"><%= pluralize(property.errors.count, "error") %> impidieron guardar el inmueble:</h6>
+      <ul class="mb-0">
+        <% property.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <%= f.label :company_id, "Empresa Gestora", class: "form-label fw-bold" %>
+      <%= f.collection_select :company_id, @companies, :id, :name, { prompt: "Selecciona una empresa" }, { class: "form-select rounded-3 p-2" } %>
+    </div>
+    
+    <div class="col-md-6">
+      <%= f.label :category, "Tipo de Oferta", class: "form-label fw-bold" %>
+      <%= f.select :category, Property.categories.keys.map { |c| [c.capitalize, c] }, {}, { class: "form-select rounded-3 p-2" } %>
+    </div>
+
+    <div class="col-12">
+      <%= f.label :address, "Dirección Completa", class: "form-label fw-bold" %>
+      <%= f.text_field :address, class: "form-control rounded-3 p-2", placeholder: "Ej. Calle 123 # 45-67, Torre 1 Apt 101" %>
+    </div>
+
+    <div class="col-md-4">
+      <%= f.label :property_type, "Tipo de Propiedad", class: "form-label fw-bold" %>
+      <%= f.select :property_type, ["Apartamento", "Casa", "Local", "Oficina", "Bodega"], { prompt: "Selecciona tipo" }, { class: "form-select rounded-3 p-2" } %>
+    </div>
+
+    <div class="col-md-4">
+      <%= f.label :area, "Área (m²)", class: "form-label fw-bold" %>
+      <%= f.number_field :area, step: 0.1, class: "form-control rounded-3 p-2" %>
+    </div>
+
+    <div class="col-md-4">
+      <%= f.label :price, "Valor (Arriendo o Venta)", class: "form-label fw-bold" %>
+      <%= f.number_field :price, class: "form-control rounded-3 p-2" %>
+    </div>
+
+    <div class="col-md-6 d-flex align-items-center">
+      <div class="form-check form-switch mt-4">
+        <%= f.check_box :has_elevator, class: "form-check-input", id: "elevatorSwitch" %>
+        <%= f.label :has_elevator, "¿Cuenta con ascensor?", class: "form-check-label fw-bold", for: "elevatorSwitch" %>
+      </div>
+    </div>
+
+    <div class="col-md-6 d-flex align-items-center">
+      <div class="form-check form-switch mt-4">
+        <%= f.check_box :admin_fee_included, class: "form-check-input", id: "adminFeeSwitch" %>
+        <%= f.label :admin_fee_included, "¿Incluye cuota de administración?", class: "form-check-label fw-bold", for: "adminFeeSwitch" %>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <%= f.label :common_areas, "Zonas Comunes", class: "form-label fw-bold" %>
+      <%= f.text_area :common_areas, rows: 2, class: "form-control rounded-3 p-2", placeholder: "Piscina, Gimnasio, bbq, etc." %>
+    </div>
+
+    <div class="col-12">
+      <%= f.label :description, "Descripción General (Larga)", class: "form-label fw-bold" %>
+      <%= f.text_area :description, rows: 4, class: "form-control rounded-3 p-2", placeholder: "Describe detalladamente las características del inmueble..." %>
+    </div>
+
+    <div class="col-12 mt-4 text-end">
+      <%= link_to "Cancelar", properties_path, class: "btn btn-light px-4 py-2 me-2 rounded-3" %>
+      <%= f.submit property.new_record? ? "Registrar Inmueble" : "Actualizar Inmueble", class: "btn btn-hestia px-5 py-2 rounded-3 shadow-sm" %>
+    </div>
+  </div>
+<% end %>

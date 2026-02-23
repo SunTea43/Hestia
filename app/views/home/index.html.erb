@@ -1,0 +1,179 @@
+<% if user_signed_in? %>
+  <div class="row pt-3">
+    <div class="col-12 mb-4">
+      <h1 class="display-5 fw-bold text-dark">Bienvenido, <%= current_user.name %></h1>
+      <p class="text-muted">Tu portal de gestión de hogar en <%= @companies&.first&.name || "Hestia" %></p>
+    </div>
+
+      <div class="col-12 mb-2">
+        <h5 class="fw-bold text-muted mb-3">Acciones Rápidas</h5>
+      </div>
+      <div class="col-md-3 mb-4">
+        <%= link_to new_property_path, class: "card border-0 shadow-sm text-decoration-none h-100 hover-lift" do %>
+          <div class="card-body text-center py-4">
+            <div class="bg-hestia-gold bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 56px; height: 56px;">
+              <%= lucide_icon "plus-circle", class: "text-hestia-gold", size: 28 %>
+            </div>
+            <h6 class="fw-bold text-dark mb-1">Nuevo Inmueble</h6>
+            <p class="small text-muted mb-0">Registrar propiedad para arriendo o venta</p>
+          </div>
+        <% end %>
+      </div>
+      <div class="col-md-3 mb-4">
+        <%= link_to new_tenant_path, class: "card border-0 shadow-sm text-decoration-none h-100 hover-lift" do %>
+          <div class="card-body text-center py-4">
+            <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 56px; height: 56px;">
+              <%= lucide_icon "user-plus", class: "text-primary", size: 28 %>
+            </div>
+            <h6 class="fw-bold text-dark mb-1">Nuevo Inquilino</h6>
+            <p class="small text-muted mb-0">Dar de alta un nuevo residente</p>
+          </div>
+        <% end %>
+      </div>
+      <div class="col-md-3 mb-4">
+        <%= link_to new_contract_path, class: "card border-0 shadow-sm text-decoration-none h-100 hover-lift" do %>
+          <div class="card-body text-center py-4">
+            <div class="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 56px; height: 56px;">
+              <%= lucide_icon "file-plus", class: "text-success", size: 28 %>
+            </div>
+            <h6 class="fw-bold text-dark mb-1">Nuevo Contrato</h6>
+            <p class="small text-muted mb-0">Vincular inmueble e inquilino</p>
+          </div>
+        <% end %>
+      </div>
+      <div class="col-md-3 mb-4">
+        <%= link_to "#", class: "card border-0 shadow-sm text-decoration-none h-100 hover-lift" do %>
+          <div class="card-body text-center py-4">
+            <div class="bg-info bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 56px; height: 56px;">
+              <%= lucide_icon "bar-chart-3", class: "text-info", size: 28 %>
+            </div>
+            <h6 class="fw-bold text-dark mb-1">Reportes</h6>
+            <p class="small text-muted mb-0">Ver estadísticas y cobros</p>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="col-12 mt-4 mb-2">
+        <h5 class="fw-bold text-muted mb-3">Resumen General</h5>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm h-100 overflow-hidden">
+          <div class="card-body d-flex align-items-center gap-3">
+            <div class="bg-primary bg-opacity-10 p-3 rounded-3">
+              <%= lucide_icon "building", class: "text-primary", size: 32 %>
+            </div>
+            <div>
+              <h6 class="card-subtitle text-muted mb-1">Inmuebles Registrados</h6>
+              <h3 class="card-title mb-0 fw-bold"><%= @properties_count %></h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm h-100 overflow-hidden">
+          <div class="card-body d-flex align-items-center gap-3">
+            <div class="bg-success bg-opacity-10 p-3 rounded-3">
+              <%= lucide_icon "file-check", class: "text-success", size: 32 %>
+            </div>
+            <div>
+              <h6 class="card-subtitle text-muted mb-1">Contratos Activos</h6>
+              <h3 class="card-title mb-0 fw-bold"><%= @active_contracts %></h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm h-100 overflow-hidden">
+          <div class="card-body d-flex align-items-center gap-3">
+            <div class="bg-warning bg-opacity-10 p-3 rounded-3">
+              <%= lucide_icon "dollar-sign", class: "text-warning", size: 32 %>
+            </div>
+            <div>
+              <h6 class="card-subtitle text-muted mb-1">Pagos Pendientes</h6>
+              <h3 class="card-title mb-0 fw-bold">$<%= number_with_delimiter(@pending_charges) %></h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <style>
+        .hover-lift {
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .hover-lift:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+        }
+      </style>
+
+    <% if current_user.inquilino? %>
+      <div class="col-md-8">
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+            <h5 class="fw-bold mb-0">Mis Contratos</h5>
+          </div>
+          <div class="card-body px-4 pb-4">
+            <% if @contracts.any? %>
+              <% @contracts.each do |contract| %>
+                <div class="d-flex align-items-center justify-content-between p-3 border rounded-3 mb-3">
+                  <div>
+                    <h6 class="fw-bold mb-1"><%= contract.property.address %></h6>
+                    <small class="text-muted"><%= contract.property.property_type %> • <%= contract.property.category.capitalize %></small>
+                  </div>
+                  <div class="text-end">
+                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Activo</span>
+                    <div class="mt-1 small text-muted">Vence: <%= contract.end_date.strftime("%d/%m/%Y") %></div>
+                  </div>
+                </div>
+              <% end %>
+            <% else %>
+              <p class="text-muted">No tienes contratos activos actualmente.</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-white border-bottom-0 pt-4 px-4">
+            <h5 class="fw-bold mb-0">Últimos Cobros</h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+              <% @charges.each do |charge| %>
+                <div class="list-group-item px-4 py-3 border-0">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <div class="fw-bold"><%= charge.charge_type.humanize %></div>
+                      <small class="text-muted">Vence: <%= charge.due_date.strftime("%d/%m/%Y") %></small>
+                    </div>
+                    <div class="text-end">
+                      <div class="fw-bold text-dark">$<%= number_with_delimiter(charge.amount) %></div>
+                      <span class="badge <%= charge.paid? ? 'bg-success' : 'bg-warning' %> bg-opacity-10 <%= charge.paid? ? 'text-success' : 'text-warning' %> rounded-pill px-2">
+                        <%= charge.status.capitalize %>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+          <div class="card-footer bg-white border-top-0 pb-4 px-4">
+            <button class="btn btn-hestia w-100 rounded-3 py-2 shadow-sm">Ver todos los pagos</button>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-5">
+    <div class="mb-4">
+      <%= lucide_icon "home", size: 80, class: "text-hestia-gold" %>
+    </div>
+    <h1 class="display-3 fw-bold mb-3" style="color: var(--hestia-dark);">HESTIA</h1>
+    <p class="lead text-muted mb-5 px-5">La diosa del hogar ahora en tu bolsillo. Gestión integral de viviendas, contratos y arrendamientos.</p>
+    <div class="d-flex justify-content-center gap-3">
+      <%= link_to "Comienza Aquí", new_user_session_path, class: "btn btn-hestia btn-lg px-5 py-3 rounded-pill shadow" %>
+      <a href="#" class="btn btn-outline-dark btn-lg px-5 py-3 rounded-pill">Saber Más</a>
+    </div>
+  </div>
+<% end %>

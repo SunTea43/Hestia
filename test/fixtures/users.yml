@@ -1,0 +1,12 @@
+gestor:
+  email: gestor@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  name: Juan Gestor
+  role: 1
+
+inquilino:
+  email: inquilino@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  name: Maria Inquilino
+  role: 2
+  document_number: "87654321"

@@ -1,0 +1,18 @@
+{
+  "name": "hestia",
+  "private": true,
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "autoprefixer": "^10.4.20",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "postcss": "^8.5.3",
+    "postcss-cli": "^11.0.0",
+    "sass": "^1.85.0"
+  },
+  "scripts": {
+    "build:css:compile": "sass ./app/assets/stylesheets/application.bootstrap.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules",
+    "build:css:prefix": "postcss ./app/assets/builds/application.css --use=autoprefixer --output=./app/assets/builds/application.css",
+    "build:css": "npm run build:css:compile && npm run build:css:prefix"
+  }
+}

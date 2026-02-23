@@ -1,0 +1,36 @@
+<div class="row pt-3 justify-content-center">
+  <div class="col-lg-8">
+    <div class="d-flex align-items-center gap-2 mb-4">
+      <%= link_to portal_documents_path, class: "text-decoration-none text-muted" do %>
+        <%= lucide_icon "arrow-left", size: 20 %>
+      <% end %>
+      <h1 class="fw-bold mb-0">Firma de Contrato</h1>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 p-5 mb-4 text-center">
+      <%= lucide_icon "pen-tool", size: 64, class: "text-hestia-gold mb-4 mx-auto" %>
+      <h3 class="fw-bold">Firma Electrónica</h3>
+      <p class="text-muted mb-5">Estás a punto de firmar el contrato de arrendamiento para el inmueble:<br>
+      <strong class="text-dark"><%= @contract.property.address %></strong></p>
+
+      <div class="bg-light p-5 rounded-4 border-2 border-dashed mb-5" style="border: 2px dashed #dee2e6;">
+        <p class="text-muted">Espacio para la firma (Próximamente)</p>
+        <div style="height: 100px;"></div>
+      </div>
+
+      <div class="d-grid gap-3 col-md-6 mx-auto">
+        <button class="btn btn-hestia btn-lg py-3 rounded-3 shadow" onclick="alert('Firma registrada exitosamente (Simulación)')">
+          Firmar Documento
+        </button>
+        <button class="btn btn-light rounded-3">
+          Descargar Borrador para Revisión
+        </button>
+      </div>
+      
+      <p class="small text-muted mt-5">
+        <%= lucide_icon "shield-check", size: 14, class: "me-1" %>
+        Certificado por Hestia SecureSign v1.0 (Placeholder)
+      </p>
+    </div>
+  </div>
+</div>

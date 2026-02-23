@@ -1,0 +1,74 @@
+<div class="d-flex justify-content-between align-items-center mb-4 pt-3">
+  <div>
+    <h1 class="fw-bold mb-0">Inmuebles</h1>
+    <p class="text-muted">Gestiona todos los inmuebles de tus empresas</p>
+  </div>
+  <%= link_to new_property_path, class: "btn btn-hestia d-flex align-items-center gap-2 px-4 py-2 rounded-3 shadow-sm" do %>
+    <%= lucide_icon "plus", size: 20 %>
+    Nuevo Inmueble
+  <% end %>
+</div>
+
+<div class="row">
+  <% @properties.each do |property| %>
+    <div class="col-md-6 col-xl-4 mb-4">
+      <div class="card border-0 shadow-sm h-100 overflow-hidden property-card">
+        <div class="property-image bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+          <%= lucide_icon "home", size: 64, class: "text-hestia-gold opacity-25" %>
+          <div class="position-absolute top-0 end-0 m-3">
+            <span class="badge <%= property.rent? ? 'bg-primary' : 'bg-success' %> rounded-pill px-3 py-2 shadow-sm">
+              <%= property.category.capitalize %>
+            </span>
+          </div>
+        </div>
+        <div class="card-body p-4">
+          <h5 class="card-title fw-bold mb-1 text-truncate"><%= property.address %></h5>
+          <p class="text-muted small mb-3">
+            <%= lucide_icon "map-pin", size: 14, class: "me-1" %>
+            <%= property.company.name %>
+          </p>
+          
+          <div class="d-flex justify-content-between mb-3">
+            <div class="text-center">
+              <div class="fw-bold"><%= property.area %> m²</div>
+              <small class="text-muted">Área</small>
+            </div>
+            <div class="text-center border-start border-end px-3">
+              <div class="fw-bold text-truncate" style="max-width: 80px;"><%= property.property_type %></div>
+              <small class="text-muted">Tipo</small>
+            </div>
+            <div class="text-center">
+              <div class="fw-bold"><%= property.has_elevator ? "Sí" : "No" %></div>
+              <small class="text-muted">Ascensor</small>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between mt-auto pt-3 border-top">
+            <h4 class="fw-bold text-hestia-dark mb-0">$<%= number_with_delimiter(property.price) %></h4>
+            <div class="d-flex gap-2">
+              <%= link_to property, class: "btn btn-outline-primary btn-sm rounded-circle p-2", title: "Ver detalles" do %>
+                <%= lucide_icon "eye", size: 18 %>
+              <% end %>
+              <%= link_to edit_property_path(property), class: "btn btn-outline-warning btn-sm rounded-circle p-2", title: "Editar" do %>
+                <%= lucide_icon "edit", size: 18 %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<style>
+  .property-card {
+    transition: transform 0.2s;
+  }
+  .property-card:hover {
+    transform: translateY(-5px);
+  }
+  .property-image {
+    position: relative;
+    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+  }
+</style>

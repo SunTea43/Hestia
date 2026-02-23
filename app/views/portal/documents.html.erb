@@ -1,0 +1,56 @@
+<div class="pt-3">
+  <div class="mb-4">
+    <h1 class="fw-bold mb-0">Mis Documentos</h1>
+    <p class="text-muted">Accede a tus contratos, actas y otros documentos importantes.</p>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-white border-bottom-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold mb-0">Contratos de Arrendamiento</h5>
+          <%= lucide_icon "file-text", class: "text-muted" %>
+        </div>
+        <div class="card-body p-0">
+          <div class="list-group list-group-flush">
+            <% @contracts.each do |contract| %>
+              <div class="list-group-item px-4 py-4 border-0 border-bottom">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex gap-3 align-items-center">
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-3">
+                      <%= lucide_icon "file-check", class: "text-primary" %>
+                    </div>
+                    <div>
+                      <h6 class="fw-bold mb-1">Contrato - <%= contract.property.address %></h6>
+                      <small class="text-muted">Vigencia: <%= contract.start_date.strftime("%d/%m/%Y") %> al <%= contract.end_date.strftime("%d/%m/%Y") %></small>
+                    </div>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <%= link_to "#", class: "btn btn-outline-primary btn-sm rounded-pill px-3" do %>
+                      <%= lucide_icon "download", size: 16, class: "me-1" %> Descargar
+                    <% end %>
+                    <% if contract.created_at > 1.day.ago %> <%# Simplified logic for 'to sign' %>
+                      <%= link_to portal_signup_contract_path(contract), class: "btn btn-hestia btn-sm rounded-pill px-3" do %>
+                        <%= lucide_icon "pen-tool", size: 16, class: "me-1" %> Firmar
+                      <% end %>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4">
+      <div class="card border-0 bg-dark text-white shadow-sm rounded-4 p-4 mb-4">
+        <h5 class="fw-bold mb-3">¿Necesitas ayuda?</h5>
+        <p class="small opacity-75 mb-4">Si no encuentras un documento o tienes dudas sobre tu contrato, puedes contactar a tu asesor comercial.</p>
+        <%= link_to portal_support_requests_path, class: "btn btn-light w-100 rounded-3 fw-bold" do %>
+          Solicitar Soporte
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

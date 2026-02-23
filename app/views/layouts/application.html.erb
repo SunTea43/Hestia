@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Hestia - Gestión de Hogares" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+
+    <style>
+      :root {
+        --hestia-gold: #D4AF37;
+        --hestia-dark: #2C3E50;
+        --hestia-light: #FDFEFE;
+        --hestia-accent: #E67E22;
+      }
+      body {
+        background-color: #f8f9fa;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      }
+      .navbar-hestia {
+        background-color: var(--hestia-dark);
+        border-bottom: 3px solid var(--hestia-gold);
+      }
+      .btn-hestia {
+        background-color: var(--hestia-gold);
+        color: white;
+        border: none;
+      }
+      .btn-hestia:hover {
+        background-color: var(--hestia-accent);
+        color: white;
+      }
+      .sidebar {
+        min-height: 100vh;
+        background-color: white;
+        border-right: 1px solid #dee2e6;
+        padding-top: 1rem;
+      }
+      .nav-link-hestia {
+        color: var(--hestia-dark);
+        padding: 0.8rem 1.25rem;
+        border-radius: 0.5rem;
+        margin: 0.2rem 0.75rem;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+      .nav-link-hestia:hover {
+        background-color: rgba(212, 175, 55, 0.1);
+        color: var(--hestia-accent);
+      }
+      .nav-link-hestia.active {
+        background-color: var(--hestia-gold);
+        color: white !important;
+      }
+      .sidebar-heading {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05rem;
+        color: #6c757d;
+        padding: 1.5rem 1.5rem 0.5rem;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-hestia shadow-sm sticky-top">
+      <div class="container-fluid px-4">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+          <%= lucide_icon "home", size: 28, class: "text-hestia-gold" %>
+          <span class="fs-4 fw-bold tracking-tight">HESTIA</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto align-items-center">
+            <% if user_signed_in? %>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-light d-flex align-items-center gap-2" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <div class="bg-hestia-gold rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: var(--hestia-gold)">
+                    <span class="small fw-bold text-white"><%= current_user.name[0] %></span>
+                  </div>
+                  <span><%= current_user.name %></span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="navbarDropdown">
+                  <li><h6 class="dropdown-header"><%= current_user.role.capitalize %></h6></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <%= button_to destroy_user_session_path, method: :delete, class: "dropdown-item text-danger d-flex align-items-center gap-2" do %>
+                      <%= lucide_icon "log-out", size: 16 %> Cerrar Sesión
+                    <% end %>
+                  </li>
+                </ul>
+              </li>
+            <% else %>
+              <li class="nav-item">
+                <%= link_to "Iniciar Sesión", new_user_session_path, class: "btn btn-hestia px-4 rounded-pill" %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <% if user_signed_in? %>
+          <div class="col-md-3 col-lg-2 p-0 d-md-block sidebar collapse">
+            <div class="position-sticky">
+              <nav class="nav flex-column">
+                <%= link_to root_path, class: "nav-link-hestia #{'active' if current_page?(root_path)}" do %>
+                  <%= lucide_icon "layout-dashboard", size: 20 %>
+                  Dashboard
+                <% end %>
+
+                <% if current_user.gestor? || current_user.admin? %>
+                  <div class="sidebar-heading">Gestión Operativa</div>
+                  <%= link_to properties_path, class: "nav-link-hestia #{'active' if controller_name == 'properties'}" do %>
+                    <%= lucide_icon "building", size: 20 %>
+                    Inmuebles
+                  <% end %>
+                  <%= link_to tenants_path, class: "nav-link-hestia #{'active' if controller_name == 'tenants'}" do %>
+                    <%= lucide_icon "users", size: 20 %>
+                    Inquilinos
+                  <% end %>
+                  <%= link_to contracts_path, class: "nav-link-hestia #{'active' if controller_name == 'contracts'}" do %>
+                    <%= lucide_icon "file-text", size: 20 %>
+                    Contratos
+                  <% end %>
+                <% end %>
+
+                <% if current_user.inquilino? %>
+                  <div class="sidebar-heading">Mi Hogar</div>
+                  <%= link_to portal_documents_path, class: "nav-link-hestia #{'active' if current_page?(portal_documents_path)}" do %>
+                    <%= lucide_icon "files", size: 20 %>
+                    Mis Documentos
+                  <% end %>
+                  <%= link_to portal_payments_path, class: "nav-link-hestia #{'active' if current_page?(portal_payments_path)}" do %>
+                    <%= lucide_icon "credit-card", size: 20 %>
+                    Pagos y Recibos
+                  <% end %>
+                  <%= link_to portal_support_requests_path, class: "nav-link-hestia #{'active' if current_page?(portal_support_requests_path)}" do %>
+                    <%= lucide_icon "help-circle", size: 20 %>
+                    Soporte
+                  <% end %>
+                <% end %>
+              </nav>
+            </div>
+          </div>
+          <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <%= render "layouts/alerts" %>
+            <%= yield %>
+          </main>
+        <% else %>
+          <main class="col-12 py-4 px-md-4">
+            <%= render "layouts/alerts" %>
+            <%= yield %>
+          </main>
+        <% end %>
+      </div>
+    </div>
+  </body>
+</html>
