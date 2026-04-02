@@ -11,7 +11,7 @@ class ContractFormTest < ActionDispatch::IntegrationTest
       role: :gestor
     )
     CompanyManager.create!(user: @gestor, company: @company)
-    
+
     @property = Property.create!(
       company: @company,
       address: "Calle Test 123",
@@ -33,7 +33,7 @@ class ContractFormTest < ActionDispatch::IntegrationTest
   test "link_to_vincular_inquilino should navigate to new contract form" do
     sign_in @gestor
     get property_path(@property)
-    
+
     # Check that the link to create a contract is present
     assert_select "a[href=?]", new_contract_path(property_id: @property.id), text: "Vincular Inquilino"
   end
@@ -41,24 +41,24 @@ class ContractFormTest < ActionDispatch::IntegrationTest
   test "new contract form should pre-select property when property_id is provided" do
     sign_in @gestor
     get new_contract_path(property_id: @property.id)
-    
+
     # Check that property is pre-selected in the form
     assert_select "select[name='contract[property_id]'] option[value='#{@property.id}'][selected]"
   end
 
   test "tenant creation and linking flow" do
     sign_in @gestor
-    
+
     # 1. Visit property show page
     get property_path(@property)
     assert_response :success
     assert_select "a[href=?]", new_contract_path(property_id: @property.id)
-    
+
     # 2. Click on vincular inquilino
     get new_contract_path(property_id: @property.id)
     assert_response :success
     assert_select "select[name='contract[property_id]'] option[value='#{@property.id}'][selected]"
-    
+
     # 3. Fill form and create contract (1 email for contract confirmation)
     assert_emails 1 do
       post contracts_path, params: {
@@ -71,7 +71,7 @@ class ContractFormTest < ActionDispatch::IntegrationTest
         }
       }
     end
-    
+
     # 4. Verify contract was created
     assert_response :redirect
     contract = Contract.last

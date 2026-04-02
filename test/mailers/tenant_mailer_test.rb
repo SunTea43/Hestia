@@ -12,13 +12,13 @@ class TenantMailerTest < ActionMailer::TestCase
 
     email = TenantMailer.invitation_email(tenant)
 
-    assert_equal ["juan@example.com"], email.to
+    assert_equal [ "juan@example.com" ], email.to
     assert_equal "Bienvenida a Hestia - Configurar tu cuenta", email.subject
-    
+
     # Check HTML part
     assert_includes email.html_part.body.to_s, "Bienvenido a Hestia"
     assert_includes email.html_part.body.to_s, "Juan Pérez"
-    
+
     # Check text part
     assert_includes email.text_part.body.to_s, "Bienvenido a Hestia"
   end
@@ -50,14 +50,14 @@ class TenantMailerTest < ActionMailer::TestCase
 
     email = TenantMailer.contract_confirmation_email(tenant, property, contract)
 
-    assert_equal ["maria@example.com"], email.to
+    assert_equal [ "maria@example.com" ], email.to
     assert_includes email.subject, "Nuevo contrato de arrendamiento"
-    
+
     # Check HTML part
     assert_includes email.html_part.body.to_s, "Calle Principal 123"
     assert_includes email.html_part.body.to_s, "María García"
     assert_includes email.html_part.body.to_s, "apartment"
-    
+
     # Check text part
     assert_includes email.text_part.body.to_s, "Calle Principal 123"
   end
