@@ -73,4 +73,4 @@ end
 
 gem "devise", "~> 5.0.3"
 gem "pundit", "~> 2.5"
-gem "lucide-rails", "~> 0.7.3"
+gem "lucide-rails", "~> 0.7.4"
