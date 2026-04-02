@@ -1,0 +1,25 @@
+Nuevo contrato de arrendamiento
+<%= "=" * 50 %>
+
+Hola <%= @tenant.name %>,
+
+Se ha creado un nuevo contrato de arrendamiento para ti en la siguiente propiedad:
+
+DETALLES DE LA PROPIEDAD
+- Dirección: <%= @property.address %>
+- Tipo: <%= @property.property_type %>
+- Área: <%= @property.area %> m²
+- Renta mensual: <%= number_to_currency(@contract.tenant_income) %>
+
+DETALLES DEL CONTRATO
+- Fecha de inicio: <%= l(@contract.start_date, format: :long) if @contract.start_date %>
+- Fecha de fin: <%= l(@contract.end_date, format: :long) if @contract.end_date %>
+
+Para ver más detalles y descargar documentos, accede a tu portal:
+
+<%= @portal_url %>
+
+Si tienes dudas sobre tu contrato, contacta con el gestor inmobiliario.
+
+Saludos,
+El equipo de Hestia

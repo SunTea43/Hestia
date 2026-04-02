@@ -15,12 +15,17 @@ class ContractsController < ApplicationController
     company_ids = current_user.admin? ? Company.pluck(:id) : current_user.company_ids
     @properties = Property.where(company_id: company_ids, category: :rent)
     @tenants = User.inquilino
+
+    # Pre-select property if provided
+    if params[:property_id].present?
+      @contract.property_id = params[:property_id]
+    end
   end
 
   def create
     @contract = Contract.new(contract_params)
     if @contract.save
-      redirect_to @contract, notice: "Contrato creado exitosamente."
+      redirect_to @contract, notice: "Contrato creado exitosamente. Se ha enviado una notificación al inquilino."
     else
       company_ids = current_user.admin? ? Company.pluck(:id) : current_user.company_ids
       @properties = Property.where(company_id: company_ids, category: :rent)

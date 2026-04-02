@@ -107,7 +107,7 @@
             <%= link_to "Ver Contrato", "#", class: "btn btn-light w-100 rounded-3" %>
           <% else %>
             <p class="text-muted small">Este inmueble no tiene un contrato de arrendamiento activo.</p>
-            <button class="btn btn-outline-primary w-100 rounded-3">Vincular Inquilino</button>
+            <%= link_to "Vincular Inquilino", new_contract_path(property_id: @property.id), class: "btn btn-outline-primary w-100 rounded-3" %>
           <% end %>
         </div>
       <% end %>

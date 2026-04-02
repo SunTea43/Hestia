@@ -11,4 +11,12 @@ class User < ApplicationRecord
   has_many :contracts, foreign_key: :tenant_id, dependent: :destroy
 
   validates :name, :role, presence: true
+
+  after_create :send_invitation_email, if: :inquilino?
+
+  private
+
+  def send_invitation_email
+    TenantMailer.invitation_email(self).deliver_later
+  end
 end

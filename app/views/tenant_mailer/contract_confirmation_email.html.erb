@@ -1,0 +1,32 @@
+<h1>Nuevo contrato de arrendamiento</h1>
+
+<p>Hola <%= @tenant.name %>,</p>
+
+<p>Se ha creado un nuevo contrato de arrendamiento para ti en la siguiente propiedad:</p>
+
+<h3>Detalles de la propiedad</h3>
+<ul>
+  <li><strong>Dirección:</strong> <%= @property.address %></li>
+  <li><strong>Tipo:</strong> <%= @property.property_type %></li>
+  <li><strong>Área:</strong> <%= @property.area %> m²</li>
+  <li><strong>Renta mensual:</strong> <%= number_to_currency(@contract.tenant_income) %></li>
+</ul>
+
+<h3>Detalles del contrato</h3>
+<ul>
+  <li><strong>Fecha de inicio:</strong> <%= l(@contract.start_date, format: :long) if @contract.start_date %></li>
+  <li><strong>Fecha de fin:</strong> <%= l(@contract.end_date, format: :long) if @contract.end_date %></li>
+</ul>
+
+<p>Para ver más detalles y descargar documentos, accede a tu portal:</p>
+
+<p>
+  <%= link_to "Ir a mi portal", @portal_url, style: "background-color: #d4af37; color: #000; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;" %>
+</p>
+
+<p>Si tienes dudas sobre tu contrato, contacta con el gestor inmobiliario.</p>
+
+<p>
+  Saludos,<br>
+  <strong>El equipo de Hestia</strong>
+</p>

@@ -1,0 +1,23 @@
+¡Bienvenido a Hestia!
+<%= "=" * 50 %>
+
+Hola <%= @tenant.name %>,
+
+Has sido registrado como inquilino en el sistema de gestión inmobiliaria Hestia.
+
+Para comenzar a usar tu cuenta y acceder al portal de inquilino, debes configurar tu contraseña visitando el siguiente enlace:
+
+<%= @confirmation_url %>
+
+Este enlace expirará en 24 horas.
+
+¿Qué puedes hacer en tu portal?
+- Ver tus contratos de arrendamiento
+- Descargar documentos importantes
+- Consultar el estado de tus pagos
+- Enviar solicitudes de soporte
+
+Si no esperabas este correo o tienes preguntas, contacta con tu gestor inmobiliario.
+
+Saludos,
+El equipo de Hestia
