@@ -71,6 +71,14 @@ group :test do
   gem "selenium-webdriver"
 end
 
+# Devise authentication
 gem "devise", "~> 5.0.3"
+
+# Authorization with Pundit RBAC
 gem "pundit", "~> 2.5"
+
+# Icons
 gem "lucide-rails", "~> 0.7.3"
+
+# PostgreSQL adapter for manual multitenancy (schema isolation)
+# No external gem needed - using PostgreSQL search_path for schema switching
