@@ -1,22 +1,20 @@
+# Usuario que accede a la aplicación (autenticación)
+# Roles: admin (acceso total), gestor (gestiona companies/properties)
+#
+# IMPORTANTE: Los inquilinos/ocupantes del inmueble son modelo separado: Occupant
+# Un User pertenece a un tenant schema (vía Apartment)
+
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  enum :role, { admin: 0, gestor: 1, inquilino: 2 }
+  enum :role, { admin: 0, gestor: 1 }
 
-  has_many :company_managers, dependent: :destroy
-  has_many :companies, through: :company_managers
-  has_many :contracts, foreign_key: :tenant_id, dependent: :destroy
+  # Apartment: User vive en su respectivo TENANT schema
+  # Todos los users de ACME en schema tenant_acme, etc
+  # No excluded_from_tenants - quiere decir que CADA tenant tiene sus users
 
   validates :name, :role, presence: true
-
-  after_create :send_invitation_email, if: :inquilino?
-
-  private
-
-  def send_invitation_email
-    TenantMailer.invitation_email(self).deliver_later
-  end
 end
