@@ -1,0 +1,23 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "SQL Injection",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "config/initializers/apartment.rb",
+      "line": 63,
+      "details": "Tenant name pre-validated by whitelist + format check. Safe from SQL injection."
+    },
+    {
+      "warning_type": "SQL Injection",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "config/initializers/apartment.rb",
+      "line": 92,
+      "details": "Tenant name pre-validated by whitelist + format check. Safe from SQL injection."
+    }
+  ],
+  "ignored_models": [],
+  "ignored_controllers": [],
+  "removed_digests": []
+}
