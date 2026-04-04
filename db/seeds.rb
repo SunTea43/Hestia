@@ -14,7 +14,7 @@ puts "=" * 70
 # ========== DEFINE TENANTS ==========
 # These are tenant identifiers - should match subdomains in production
 # Use "default_tenant" instead of "public" to avoid SQL keyword conflicts
-tenants_to_seed = ["acme", "public"]  # "public" is the default schema in PostgreSQL
+tenants_to_seed = [ "acme", "public" ]  # "public" is the default schema in PostgreSQL
 
 # ========== CREATE TENANT SCHEMAS ==========
 
@@ -36,7 +36,7 @@ puts "\n2️⃣ Switching to ACME tenant schema..."
 Apartment::Tenant.switch!("acme")
 
 # Clean ACME tenant
-[Charge, Contract, Occupant, Property, Company, CompanyManager, User].each do |model|
+[ Charge, Contract, Occupant, Property, Company, CompanyManager, User ].each do |model|
   begin
     model.destroy_all
   rescue => e
@@ -192,7 +192,7 @@ Apartment::Tenant.reset
 Apartment::Tenant.switch!("public")
 
 # Clean default tenant
-[Charge, Contract, Occupant, Property, Company, CompanyManager, User].each do |model|
+[ Charge, Contract, Occupant, Property, Company, CompanyManager, User ].each do |model|
   begin
     model.destroy_all
   rescue => e

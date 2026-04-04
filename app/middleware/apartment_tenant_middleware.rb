@@ -24,9 +24,9 @@ class ApartmentTenantMiddleware
     # Determine tenant name
     tenant_name = if subdomain.present? && subdomain != "www"
                     subdomain  # Use subdomain as tenant identifier
-                  else
+    else
                     "public"  # Use PostgreSQL's default schema
-                  end
+    end
 
     begin
       # Switch to tenant schema
@@ -35,10 +35,10 @@ class ApartmentTenantMiddleware
       # Process request
       status, headers, body = @app.call(env)
 
-      [status, headers, body]
+      [ status, headers, body ]
     rescue Apartment::TenantNotFound => e
       # Tenant schema doesn't exist
-      [404, { "Content-Type" => "text/plain" }, ["Tenant not found: #{tenant_name}"]]
+      [ 404, { "Content-Type" => "text/plain" }, [ "Tenant not found: #{tenant_name}" ] ]
     ensure
       # Always reset to public schema after request
       Apartment::Tenant.reset

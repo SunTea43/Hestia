@@ -1,7 +1,7 @@
 namespace :apartment do
   desc "Create all tenant schemas"
   task create_schemas: :environment do
-    tenants_to_create = ENV["APARTMENT_TENANTS"]&.split(",")&.map(&:strip) || ["default"]
+    tenants_to_create = ENV["APARTMENT_TENANTS"]&.split(",")&.map(&:strip) || [ "default" ]
 
     tenants_to_create.each do |tenant|
       next if tenant == "default"  # skip default, already exists
@@ -17,7 +17,7 @@ namespace :apartment do
 
   desc "Migrate all tenant schemas"
   task migrate: :environment do
-    tenants_to_migrate = ENV["APARTMENT_TENANTS"]&.split(",")&.map(&:strip) || ["default"]
+    tenants_to_migrate = ENV["APARTMENT_TENANTS"]&.split(",")&.map(&:strip) || [ "default" ]
 
     tenants_to_migrate.each do |tenant|
       puts "\n" + "=" * 60
@@ -52,7 +52,7 @@ namespace :apartment do
   end
 
   desc "Create a new tenant"
-  task "create:tenant", [:tenant_name, :admin_email, :admin_password] => :environment do |t, args|
+  task "create:tenant", [ :tenant_name, :admin_email, :admin_password ] => :environment do |t, args|
     tenant_name = args[:tenant_name] || ENV["TENANT_NAME"]
     admin_email = args[:admin_email] || ENV["ADMIN_EMAIL"] || "admin@#{tenant_name}.local"
     admin_password = args[:admin_password] || ENV["ADMIN_PASSWORD"] || "password123"

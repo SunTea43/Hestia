@@ -3,7 +3,7 @@ require "test_helper"
 class MiddlewareSubdomainTest < ActionDispatch::IntegrationTest
   setup do
     ENV["APARTMENT_TENANTS"] = "public,acme,test"
-    
+
     # Create test schemas
     create_test_schema("test")
     create_test_schema("acme")
@@ -32,7 +32,7 @@ class MiddlewareSubdomainTest < ActionDispatch::IntegrationTest
 
     # Test request to acme.localhost
     get "/", headers: { "HTTP_HOST" => "acme.localhost:3000" }
-    
+
     # After request, the middleware should have switched back to public
     # But during the request, it should have been in acme schema
     # We verify by checking that acme tenant has the right data
@@ -70,7 +70,7 @@ class MiddlewareSubdomainTest < ActionDispatch::IntegrationTest
 
     # Request to localhost (no subdomain) should route to public
     get "/", headers: { "HTTP_HOST" => "localhost:3000" }
-    
+
     # Verify public schema was used
     Apartment::Tenant.switch!("public") do
       assert_equal 1, Company.count, "Public tenant should have 1 company"
@@ -97,7 +97,7 @@ class MiddlewareSubdomainTest < ActionDispatch::IntegrationTest
 
     # Request to www.localhost should route to public (www is ignored)
     get "/", headers: { "HTTP_HOST" => "www.localhost:3000" }
-    
+
     # Verify public schema was used
     Apartment::Tenant.switch!("public") do
       assert_equal 1, Company.count, "Public tenant should have 1 company"
@@ -110,7 +110,7 @@ class MiddlewareSubdomainTest < ActionDispatch::IntegrationTest
     # Note: In integration tests, middleware may not be fully engaged
     # The important thing is that Apartment::Tenant.switch! raises TenantNotFound
     # which is tested in other unit tests
-    
+
     # For now, just verify that an invalid tenant would raise TenantNotFound
     assert_raises(Apartment::TenantNotFound) do
       Apartment::Tenant.switch!("nonexistent")
@@ -121,7 +121,7 @@ class MiddlewareSubdomainTest < ActionDispatch::IntegrationTest
 
   def create_test_schema(tenant_name)
     return if tenant_name == "public"
-    
+
     begin
       Apartment::Tenant.create(tenant_name)
     rescue Apartment::SchemaExists => e

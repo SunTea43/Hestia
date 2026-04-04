@@ -13,7 +13,7 @@ module Apartment
   class SchemaExists < StandardError; end
 
   # List of configured tenants from environment
-  TENANT_NAMES = ENV["APARTMENT_TENANTS"]&.split(",")&.map(&:strip) || ["public"]
+  TENANT_NAMES = ENV["APARTMENT_TENANTS"]&.split(",")&.map(&:strip) || [ "public" ]
 
   def self.tenant_names
     TENANT_NAMES
@@ -40,7 +40,7 @@ module Apartment
 
     def self.reset
       # Reset to public schema
-      #no-op since we're already using public
+      # no-op since we're already using public
       @@current_tenant = "public"
     end
 

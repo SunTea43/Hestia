@@ -20,7 +20,7 @@ class Client < ApplicationRecord
   validates :name, :subdomain, presence: true
   validates :subdomain, uniqueness: true,
             format: { with: /\A[a-z0-9_]+\z/, message: "must be lowercase alphanumeric with underscores" }
-  validates :plan, inclusion: { in: %w(free pro enterprise) }, allow_blank: true
+  validates :plan, inclusion: { in: %w[free pro enterprise] }, allow_blank: true
 
   # Tenant schema name for Apartment
   def tenant_name

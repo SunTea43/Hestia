@@ -8,7 +8,7 @@ class CreateOccupants < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
-    
+
     add_index :occupants, :email
     add_index :occupants, :document_number
   end
