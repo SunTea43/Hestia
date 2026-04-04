@@ -5,34 +5,15 @@
 #   - "acme" → domain acme.localhost
 #   - "public" → domain localhost:3000 (PostgreSQL's default schema)
 #
-# Schema switching is done via ActiveRecord connection.execute("SET search_path TO ...")
+# SECURITY APPROACH:
+# ==================
+# 1. All SQL statements pre-compiled at startup from TENANT_NAMES
+# 2. No string interpolation of tenant names in SQL at runtime
+# 3. All tenant names validated against whitelist at configuration time
+# 4. Database-level schema isolation prevents cross-tenant access
 #
-# SECURITY & BRAKEMAN FALSE POSITIVES:
-# ====================================
-# Brakeman may report "SQL Injection" on lines that interpolate tenant_name in SQL.
-# These are FALSE POSITIVES because of our multi-layer security approach:
-#
-# LAYER 1 - WHITELIST VALIDATION:
-#   - All tenant names must exist in TENANT_NAMES environment variable
-#   - Impossible to switch to non-configured tenants
-#
-# LAYER 2 - FORMAT VALIDATION:
-#   - Tenant names must match /\A[a-z0-9_\-]+\z/i (alphanumeric + underscore + hyphen)
-#   - Prevents SQL syntax characters (', ", ;, --, etc.)
-#   - Even with interpolation, no SQL injection possible
-#
-# LAYER 3 - DATABASE-LEVEL ISOLATION:
-#   - Even if someone bypassed layers 1-2, SQL runs within their schema only
-#   - Cross-schema access impossible - other tenants' data is unreachable
-#   - This is PostgreSQL schema security at the database level
-#
-# LAYER 4 - QUOTED IDENTIFIERS:
-#   - Tenant names wrapped in double quotes per SQL spec
-#   - PostgreSQL treats as literal identifiers, not SQL syntax
-#
-# The tenant name string interpolation is safe because validation happens BEFORE
-# the string reaches execute(). By the time SQL is executed, tenant_name has
-# already proven to be safe and contained to its own schema.
+# This ensures SQL injection is impossible - all SQL values are hardcoded
+# constants determined at application startup, not runtime user input.
 
 # Define Apartment namespace and classes for compatibility
 module Apartment
@@ -46,24 +27,25 @@ module Apartment
     TENANT_NAMES
   end
 
-  # Sanitize tenant name: validate against whitelist and format
-  # This ensures only configured tenant names are used in SQL statements
-  private_class_method def self.validate_and_quote_tenant(tenant_name)
-    # Whitelist validation: tenant must be in configured TENANT_NAMES
-    unless TENANT_NAMES.include?(tenant_name)
-      raise TenantNotFound, "Tenant '#{tenant_name}' is not configured"
+  # Pre-compile all safe SQL statements at startup
+  # This ensures tenant names are never interpolated in SQL at runtime
+  begin
+    # Validate all tenant names at startup
+    TENANT_NAMES.each do |name|
+      unless name.match?(/\A[a-z0-9_\-]+\z/i)
+        raise "Invalid tenant name in configuration: #{name}. Must match /\\A[a-z0-9_\\-]+\\z/i"
+      end
     end
 
-    # Format validation: alphanumeric, underscore, hyphen only
-    # This prevents any SQL syntax injection attempts
-    unless tenant_name.match?(/\A[a-z0-9_\-]+\z/i)
-      raise TenantNotFound, "Invalid tenant name format: #{tenant_name}"
-    end
+    # Pre-build SET search_path commands
+    SET_SEARCH_PATH_COMMANDS = TENANT_NAMES.each_with_object({}) do |name, hash|
+      hash[name] = "SET search_path TO \"#{name}\", public;"
+    end.freeze
 
-    # Return safely quoted identifier for PostgreSQL
-    # Double quotes escape identifiers per SQL spec
-    # SECURITY: safe because tenant_name is validated against whitelist + format checked
-    "\"#{tenant_name}\""
+    # Pre-build CREATE SCHEMA commands (skip public - already exists)
+    CREATE_SCHEMA_COMMANDS = TENANT_NAMES.select { |name| name != "public" }.each_with_object({}) do |name, hash|
+      hash[name] = "CREATE SCHEMA \"#{name}\";"
+    end.freeze
   end
 
   # Tenant switching module
@@ -75,30 +57,32 @@ module Apartment
     end
 
     def self.switch!(tenant_name)
-      # Validates tenant and returns safely quoted identifier
-      # All SQL injection attempts blocked at validation layer
-      quoted_tenant = Apartment.validate_and_quote_tenant(tenant_name)
+      # Validate tenant is configured
+      unless Apartment::TENANT_NAMES.include?(tenant_name)
+        raise TenantNotFound, "Tenant '#{tenant_name}' is not configured"
+      end
 
-      # Set PostgreSQL search_path to the tenant schema
-      # tenant_name already validated and quoted - safe from injection
-      # noinspection WebpackConfigHighlight,ALL - tenant name pre-validated by whitelist + format check
-      sql = "SET search_path TO #{quoted_tenant}, public;"
-      ActiveRecord::Base.connection.execute(sql) # :skip brakeman: SQL Injection - tenant pre-validated by whitelist
+      # Get pre-compiled SQL statement (no runtime interpolation)
+      sql = Apartment::SET_SEARCH_PATH_COMMANDS[tenant_name]
+      raise TenantNotFound, "SQL command not found for tenant: #{tenant_name}" unless sql
+
+      # Execute pre-built SQL
+      ActiveRecord::Base.connection.execute(sql)
       @@current_tenant = tenant_name
     end
 
     def self.reset
       # Reset to public schema
-      # no-op since we're already using public
       @@current_tenant = "public"
     end
 
     def self.create(tenant_name)
-      # Validates tenant and returns safely quoted identifier
-      quoted_tenant = Apartment.validate_and_quote_tenant(tenant_name)
+      # Validate tenant is configured
+      unless Apartment::TENANT_NAMES.include?(tenant_name)
+        raise TenantNotFound, "Tenant '#{tenant_name}' is not configured"
+      end
 
-      # Check if schema exists using parameterized query
-      # $1 binds tenant_name safely - prevents SQL injection
+      # Check if schema already exists using parameterized query
       schema_check = ActiveRecord::Base.connection.execute(
         "SELECT 1 FROM information_schema.schemata WHERE schema_name = $1",
         [ tenant_name ]
@@ -108,11 +92,14 @@ module Apartment
         raise SchemaExists, "Schema '#{tenant_name}' already exists"
       end
 
-      # Create schema (skip if trying to create "public" - it already exists)
+      # Create schema if not public (already exists)
       if tenant_name != "public"
-        # tenant_name already validated and quoted - safe from injection
-        sql = "CREATE SCHEMA #{quoted_tenant};"
-        ActiveRecord::Base.connection.execute(sql) # :skip brakeman: SQL Injection - tenant pre-validated by whitelist
+        # Get pre-compiled SQL statement (no runtime interpolation)
+        sql = Apartment::CREATE_SCHEMA_COMMANDS[tenant_name]
+        raise TenantNotFound, "SQL command not found for tenant: #{tenant_name}" unless sql
+
+        # Execute pre-built SQL
+        ActiveRecord::Base.connection.execute(sql)
         puts "✅ Created schema: #{tenant_name}"
       end
     end
