@@ -1,4 +1,9 @@
 ENV["RAILS_ENV"] ||= "test"
+
+# Set default APARTMENT_TENANTS for tests
+# Tests that need specific tenants can override this in setup
+ENV["APARTMENT_TENANTS"] ||= "public,test"
+
 require_relative "../config/environment"
 require "rails/test_help"
 

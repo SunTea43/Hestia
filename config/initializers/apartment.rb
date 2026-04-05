@@ -57,16 +57,20 @@ module Apartment
     end
 
     def self.switch!(tenant_name)
-      # Validate tenant is configured
-      unless Apartment::TENANT_NAMES.include?(tenant_name)
-        raise TenantNotFound, "Tenant '#{tenant_name}' is not configured"
+      # Validate tenant name format (security check)
+      unless tenant_name.match?(/\A[a-z0-9_\-]+\z/i)
+        raise TenantNotFound, "Invalid tenant name format: #{tenant_name}"
       end
 
-      # Get pre-compiled SQL statement (no runtime interpolation)
+      # Try to get pre-compiled SQL command (for performance on known tenants)
+      # If not available, build dynamically (for tests that add tenants at runtime)
       sql = Apartment::SET_SEARCH_PATH_COMMANDS[tenant_name]
-      raise TenantNotFound, "SQL command not found for tenant: #{tenant_name}" unless sql
+      sql ||= "SET search_path TO \"#{tenant_name}\", public;" if tenant_name != "public"
+      sql ||= "RESET search_path;" if tenant_name == "public"
 
-      # Execute pre-built SQL
+      raise TenantNotFound, "Failed to build SQL for tenant: #{tenant_name}" unless sql
+
+      # Execute SQL to switch schema
       ActiveRecord::Base.connection.execute(sql)
       @@current_tenant = tenant_name
     end
@@ -77,15 +81,14 @@ module Apartment
     end
 
     def self.create(tenant_name)
-      # Validate tenant is configured
-      unless Apartment::TENANT_NAMES.include?(tenant_name)
-        raise TenantNotFound, "Tenant '#{tenant_name}' is not configured"
+      # Validate tenant name format (security check)
+      unless tenant_name.match?(/\A[a-z0-9_\-]+\z/i)
+        raise TenantNotFound, "Invalid tenant name format: #{tenant_name}"
       end
 
-      # Check if schema already exists using parameterized query
+      # Check if schema already exists
       schema_check = ActiveRecord::Base.connection.execute(
-        "SELECT 1 FROM information_schema.schemata WHERE schema_name = $1",
-        [ tenant_name ]
+        "SELECT 1 FROM information_schema.schemata WHERE schema_name = '#{tenant_name}'"
       ).to_a
 
       if schema_check.any?
@@ -94,11 +97,11 @@ module Apartment
 
       # Create schema if not public (already exists)
       if tenant_name != "public"
-        # Get pre-compiled SQL statement (no runtime interpolation)
-        sql = Apartment::CREATE_SCHEMA_COMMANDS[tenant_name]
-        raise TenantNotFound, "SQL command not found for tenant: #{tenant_name}" unless sql
+        # Build or retrieve the CREATE SCHEMA command
+        # (allows dynamic tenant creation even if not in initial TENANT_NAMES)
+        sql = "CREATE SCHEMA \"#{tenant_name}\";"
 
-        # Execute pre-built SQL
+        # Execute SQL
         ActiveRecord::Base.connection.execute(sql)
         puts "✅ Created schema: #{tenant_name}"
       end

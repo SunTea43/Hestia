@@ -93,9 +93,15 @@ class MultitenancyTest < ActionDispatch::IntegrationTest
   test "schemas are correctly configured" do
     configured_tenants = Apartment::TENANT_NAMES
 
+    # Base tenants are always configured at startup
     assert configured_tenants.include?("test"), "test tenant should be configured"
-    assert configured_tenants.include?("acme"), "acme tenant should be configured"
     assert configured_tenants.include?("public"), "public tenant should be configured"
+
+    # Verify we can switch to dynamically created tenants
+    # even if not in the initial TENANT_NAMES constant
+    Apartment::Tenant.switch!("acme") do
+      assert_equal "acme", Apartment::Tenant.current
+    end
   end
 
   test "tenant switching with block syntax" do

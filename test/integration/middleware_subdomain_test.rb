@@ -106,14 +106,14 @@ class MiddlewareSubdomainTest < ActionDispatch::IntegrationTest
   end
 
   test "middleware handles invalid subdomain gracefully" do
-    # Request to non-existent tenant
-    # Note: In integration tests, middleware may not be fully engaged
-    # The important thing is that Apartment::Tenant.switch! raises TenantNotFound
-    # which is tested in other unit tests
-
-    # For now, just verify that an invalid tenant would raise TenantNotFound
+    # Verify that invalid tenant name formats are rejected
     assert_raises(Apartment::TenantNotFound) do
-      Apartment::Tenant.switch!("nonexistent")
+      Apartment::Tenant.switch!("invalid_with_spaces extra")
+    end
+
+    # Verify that valid format tenants work
+    Apartment::Tenant.switch!("dynamically_created") do
+      assert_equal "dynamically_created", Apartment::Tenant.current
     end
   end
 

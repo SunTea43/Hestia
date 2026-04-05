@@ -10,7 +10,10 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  enum :role, { admin: 0, gestor: 1 }
+  enum :role, { admin: 0, gestor: 1, inquilino: 2 }
+
+  has_many :company_managers, dependent: :destroy
+  has_many :companies, through: :company_managers
 
   # Apartment: User vive en su respectivo TENANT schema
   # Todos los users de ACME en schema tenant_acme, etc

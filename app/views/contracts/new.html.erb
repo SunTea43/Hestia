@@ -14,8 +14,8 @@
           <%= f.collection_select :property_id, @properties, :id, :address, { prompt: "Selecciona inmueble" }, { class: "form-select rounded-3 p-2" } %>
         </div>
         <div class="col-md-6">
-          <%= f.label :tenant_id, "Inquilino", class: "form-label fw-bold" %>
-          <%= f.collection_select :tenant_id, @tenants, :id, :name, { prompt: "Selecciona inquilino" }, { class: "form-select rounded-3 p-2" } %>
+          <%= f.label :occupant_id, "Inquilino", class: "form-label fw-bold" %>
+          <%= f.collection_select :occupant_id, @occupants, :id, :name, { prompt: "Selecciona inquilino" }, { class: "form-select rounded-3 p-2" } %>
         </div>
 
         <div class="col-md-6">

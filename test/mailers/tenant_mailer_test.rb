@@ -2,15 +2,13 @@ require "test_helper"
 
 class TenantMailerTest < ActionMailer::TestCase
   test "invitation_email sends to correct address" do
-    tenant = User.create!(
+    occupant = Occupant.create!(
       name: "Juan Pérez",
       email: "juan@example.com",
-      password: "password123",
-      password_confirmation: "password123",
-      role: :inquilino
+      document_number: "11111111"
     )
 
-    email = TenantMailer.invitation_email(tenant)
+    email = TenantMailer.invitation_email(occupant)
 
     assert_equal [ "juan@example.com" ], email.to
     assert_equal "Bienvenida a Hestia - Configurar tu cuenta", email.subject
@@ -33,22 +31,20 @@ class TenantMailerTest < ActionMailer::TestCase
       category: :rent,
       price: 1500
     )
-    tenant = User.create!(
+    occupant = Occupant.create!(
       name: "María García",
       email: "maria@example.com",
-      password: "password123",
-      password_confirmation: "password123",
-      role: :inquilino
+      document_number: "22222222"
     )
     contract = Contract.create!(
       property: property,
-      tenant: tenant,
+      occupant: occupant,
       start_date: Date.today,
       end_date: Date.today + 2.years,
       tenant_income: 2000
     )
 
-    email = TenantMailer.contract_confirmation_email(tenant, property, contract)
+    email = TenantMailer.contract_confirmation_email(occupant, property, contract)
 
     assert_equal [ "maria@example.com" ], email.to
     assert_includes email.subject, "Nuevo contrato de arrendamiento"
@@ -62,18 +58,6 @@ class TenantMailerTest < ActionMailer::TestCase
     assert_includes email.text_part.body.to_s, "Calle Principal 123"
   end
 
-  test "invitation_email is sent when creating new tenant" do
-    assert_emails 1 do
-      User.create!(
-        name: "Carlos López",
-        email: "carlos@example.com",
-        password: "password123",
-        password_confirmation: "password123",
-        role: :inquilino
-      )
-    end
-  end
-
   test "contract confirmation email is sent when creating contract" do
     company = Company.create!(name: "Test Company")
     property = Property.create!(
@@ -84,18 +68,16 @@ class TenantMailerTest < ActionMailer::TestCase
       category: :rent,
       price: 2500
     )
-    tenant = User.create!(
+    occupant = Occupant.create!(
       name: "Ana Martínez",
       email: "ana@example.com",
-      password: "password123",
-      password_confirmation: "password123",
-      role: :inquilino
+      document_number: "33333333"
     )
 
     assert_emails 1 do
       Contract.create!(
         property: property,
-        tenant: tenant,
+        occupant: occupant,
         start_date: Date.today,
         end_date: Date.today + 1.year,
         tenant_income: 3000
