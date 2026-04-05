@@ -37,14 +37,15 @@ module Apartment
       end
     end
 
-    # Pre-build SET search_path commands
     SET_SEARCH_PATH_COMMANDS = TENANT_NAMES.each_with_object({}) do |name, hash|
-      hash[name] = "SET search_path TO \"#{name}\", public;"
+      quoted_name = ActiveRecord::Base.connection.quote_table_name(name)
+      hash[name] = "SET search_path TO #{quoted_name}, public;"
     end.freeze
 
     # Pre-build CREATE SCHEMA commands (skip public - already exists)
     CREATE_SCHEMA_COMMANDS = TENANT_NAMES.select { |name| name != "public" }.each_with_object({}) do |name, hash|
-      hash[name] = "CREATE SCHEMA \"#{name}\";"
+      quoted_name = ActiveRecord::Base.connection.quote_table_name(name)
+      hash[name] = "CREATE SCHEMA #{quoted_name};"
     end.freeze
   end
 
@@ -63,12 +64,17 @@ module Apartment
       end
 
       # Try to get pre-compiled SQL command (for performance on known tenants)
-      # If not available, build dynamically (for tests that add tenants at runtime)
       sql = Apartment::SET_SEARCH_PATH_COMMANDS[tenant_name]
-      sql ||= "SET search_path TO \"#{tenant_name}\", public;" if tenant_name != "public"
-      sql ||= "RESET search_path;" if tenant_name == "public"
-
-      raise TenantNotFound, "Failed to build SQL for tenant: #{tenant_name}" unless sql
+      
+      # If not available, build dynamically using proper quoting
+      unless sql
+        if tenant_name == "public"
+          sql = "RESET search_path;"
+        else
+          quoted_tenant = ActiveRecord::Base.connection.quote_table_name(tenant_name)
+          sql = "SET search_path TO #{quoted_tenant}, public;"
+        end
+      end
 
       # Execute SQL to switch schema
       ActiveRecord::Base.connection.execute(sql)
@@ -86,9 +92,10 @@ module Apartment
         raise TenantNotFound, "Invalid tenant name format: #{tenant_name}"
       end
 
-      # Check if schema already exists
+      # Check if schema already exists using parameterized-like quoting
+      quoted_name = ActiveRecord::Base.connection.quote(tenant_name)
       schema_check = ActiveRecord::Base.connection.execute(
-        "SELECT 1 FROM information_schema.schemata WHERE schema_name = '#{tenant_name}'"
+        "SELECT 1 FROM information_schema.schemata WHERE schema_name = #{quoted_name}"
       ).to_a
 
       if schema_check.any?
@@ -97,9 +104,9 @@ module Apartment
 
       # Create schema if not public (already exists)
       if tenant_name != "public"
-        # Build or retrieve the CREATE SCHEMA command
-        # (allows dynamic tenant creation even if not in initial TENANT_NAMES)
-        sql = "CREATE SCHEMA \"#{tenant_name}\";"
+        # Use pre-compiled command or build new one with proper quoting
+        sql = Apartment::CREATE_SCHEMA_COMMANDS[tenant_name]
+        sql ||= "CREATE SCHEMA #{ActiveRecord::Base.connection.quote_table_name(tenant_name)};"
 
         # Execute SQL
         ActiveRecord::Base.connection.execute(sql)
