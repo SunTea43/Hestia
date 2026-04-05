@@ -8,11 +8,19 @@ class TenantMailer < ApplicationMailer
     mail(to: @tenant.email, subject: "Bienvenida a Hestia - Configurar tu cuenta")
   end
 
+  def contract_confirmation_email(tenant, property, contract)
+    @tenant = tenant
+    @property = property
+    @contract = contract
+    @portal_url = portal_dashboard_url(host: "localhost:3000")
+    mail(to: @tenant.email, subject: "Nuevo contrato de arrendamiento - #{@property.address}")
+  end
+
   def document_confirmation_email(occupant, property, document)
     @occupant = occupant
     @property = property
     @document = document
     @portal_url = portal_dashboard_url(host: "localhost:3000")
-    mail(to: @occupant.email, subject: "Nuevo documento - #{@document.document_type&.name} - #{@property.address}")
+    mail(to: @occupant.email, subject: "Nuevo documento de arrendamiento - #{@property.address}")
   end
 end

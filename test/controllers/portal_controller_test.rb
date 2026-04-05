@@ -6,7 +6,7 @@ class PortalControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     @user = users(:inquilino)
-    @contract = contracts(:one)
+    @document = documents(:one)
     sign_in @user
   end
 
@@ -30,8 +30,8 @@ class PortalControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get signup_contract" do
-    get portal_signup_contract_url(@contract)
+  test "should get sign_document" do
+    get portal_sign_document_url(@document)
     assert_response :success
   end
 end

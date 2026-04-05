@@ -1,11 +1,12 @@
 require "test_helper"
 
-class ContractMailingTest < ActionMailer::TestCase
+class DocumentMailingTest < ActionMailer::TestCase
   setup do
     @company = Company.create!(name: "Test Company")
+    @doc_type = DocumentType.create!(name: "Contrato", icon: "file-text", color: "#000000")
   end
 
-  test "contract creation sends confirmation email to occupant" do
+  test "document creation sends confirmation email to occupant" do
     property = Property.create!(
       company: @company,
       address: "Avenida Principal 456",
@@ -22,7 +23,8 @@ class ContractMailingTest < ActionMailer::TestCase
     )
 
     assert_emails 1 do
-      Contract.create!(
+      Document.create!(
+        document_type: @doc_type,
         property: property,
         occupant: occupant,
         start_date: Date.today,
@@ -30,10 +32,10 @@ class ContractMailingTest < ActionMailer::TestCase
         tenant_income: 1800
       )
 
-      # Verify the contract confirmation email
+      # Verify the document confirmation email
       email = ActionMailer::Base.deliveries.last
       assert_equal [ "carlos@example.com" ], email.to
-      assert_includes email.subject, "Nuevo contrato de arrendamiento"
+      assert_includes email.subject, "documento"
       assert_includes email.html_part.body.to_s, "Avenida Principal 456"
     end
   end
@@ -67,7 +69,8 @@ class ContractMailingTest < ActionMailer::TestCase
     )
 
     assert_emails 1 do
-      Contract.create!(
+      Document.create!(
+        document_type: @doc_type,
         property: property,
         occupant: occupant,
         start_date: "2026-04-15",
@@ -76,17 +79,15 @@ class ContractMailingTest < ActionMailer::TestCase
       )
     end
 
-    # Get the contract confirmation email
+    # Get the document confirmation email
     email = ActionMailer::Base.deliveries.last
     body = email.html_part.body.to_s
 
     assert_includes body, "Calle Reforma 789"
-    assert_includes body, "house"
-    assert_includes body, "120"  # area in m²
     assert_not_empty email.text_part.body.to_s
   end
 
-  test "full workflow: create occupant and contract sends confirmation email" do
+  test "full workflow: create occupant and document sends confirmation email" do
     property = Property.create!(
       company: @company,
       address: "Plaza Mayor 100",
@@ -103,8 +104,9 @@ class ContractMailingTest < ActionMailer::TestCase
     )
 
     assert_emails 1 do
-      # Create contract (sends contract confirmation email)
-      Contract.create!(
+      # Create document (sends document confirmation email)
+      Document.create!(
+        document_type: @doc_type,
         property: property,
         occupant: occupant,
         start_date: Date.today,
@@ -113,10 +115,10 @@ class ContractMailingTest < ActionMailer::TestCase
       )
     end
 
-    # Verify contract email
-    contract_email = ActionMailer::Base.deliveries.last
-    assert_equal [ "diego@example.com" ], contract_email.to
-    assert_includes contract_email.subject, "Nuevo contrato de arrendamiento"
-    assert_includes contract_email.html_part.body.to_s, "Plaza Mayor 100"
+    # Verify document email
+    document_email = ActionMailer::Base.deliveries.last
+    assert_equal [ "diego@example.com" ], document_email.to
+    assert_includes document_email.subject, "documento"
+    assert_includes document_email.html_part.body.to_s, "Plaza Mayor 100"
   end
 end

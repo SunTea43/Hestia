@@ -39,7 +39,8 @@ class MultitenancyModelTest < ActiveSupport::TestCase
       Company.destroy_all
       Property.destroy_all
       Occupant.destroy_all
-      Contract.destroy_all
+      Document.destroy_all
+      DocumentType.destroy_all
 
       # Create company
       company = Company.create!(
@@ -66,8 +67,12 @@ class MultitenancyModelTest < ActiveSupport::TestCase
         document_number: "123456789"
       )
 
-      # Create contract linking property and occupant
-      contract = Contract.create!(
+      # Create document type
+      doc_type = DocumentType.create!(name: "Contrato", icon: "file-text", color: "#000000")
+
+      # Create document linking property and occupant
+      document = Document.create!(
+        document_type: doc_type,
         property_id: property.id,
         occupant_id: occupant.id,
         start_date: Date.today,
@@ -77,9 +82,9 @@ class MultitenancyModelTest < ActiveSupport::TestCase
 
       # Verify relationships
       assert_equal company, property.company
-      assert_equal occupant, contract.occupant
-      assert_equal property, contract.property
-      assert_equal 1, occupant.contracts.count
+      assert_equal occupant, document.occupant
+      assert_equal property, document.property
+      assert_equal 1, occupant.documents.count
       assert_equal 1, company.properties.count
     end
   end

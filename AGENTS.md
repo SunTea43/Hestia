@@ -1,5 +1,11 @@
 # AGENTS.md - Hestia Real Estate Management System
 
+## ⚠️ Importante para Agentes
+
+**NO usar emojis** en respuestas, commits, comentarios de código o documentación generada. Mantener el código y comunicación profesional sin emojis.
+
+---
+
 ## 📋 Resumen Ejecutivo
 
 **Hestia** es un sistema integral de gestión inmobiliaria construido con **Ruby on Rails 8.1.2** que permite digitalizar todo el ciclo de negocio de bienes raíces: desde la lista de propiedades hasta la gestión de contratos, tenants y seguimiento de pagos.

@@ -1,13 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  description: MyText
-  icon: MyString
-  color: MyString
+  name: Contrato
+  description: Contrato de arrendamiento
+  icon: file-text
+  color: "#D4AF37"
 
 two:
-  name: MyString
-  description: MyText
-  icon: MyString
-  color: MyString
+  name: Recibo
+  description: Recibo de pago
+  icon: receipt
+  color: "#28a745"

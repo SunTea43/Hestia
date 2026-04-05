@@ -37,15 +37,14 @@ module Apartment
       end
     end
 
+    # Pre-build SET search_path commands
     SET_SEARCH_PATH_COMMANDS = TENANT_NAMES.each_with_object({}) do |name, hash|
-      quoted_name = ActiveRecord::Base.connection.quote_table_name(name)
-      hash[name] = "SET search_path TO #{quoted_name}, public;"
+      hash[name] = "SET search_path TO \"#{name}\", public;"
     end.freeze
 
     # Pre-build CREATE SCHEMA commands (skip public - already exists)
     CREATE_SCHEMA_COMMANDS = TENANT_NAMES.select { |name| name != "public" }.each_with_object({}) do |name, hash|
-      quoted_name = ActiveRecord::Base.connection.quote_table_name(name)
-      hash[name] = "CREATE SCHEMA #{quoted_name};"
+      hash[name] = "CREATE SCHEMA \"#{name}\";"
     end.freeze
   end
 
@@ -64,19 +63,20 @@ module Apartment
       end
 
       # Try to get pre-compiled SQL command (for performance on known tenants)
+      # If not available, build dynamically (for tests that add tenants at runtime)
       sql = Apartment::SET_SEARCH_PATH_COMMANDS[tenant_name]
-
-      # If not available, build dynamically using proper quoting
-      unless sql
-        if tenant_name == "public"
-          sql = "RESET search_path;"
-        else
-          quoted_tenant = ActiveRecord::Base.connection.quote_table_name(tenant_name)
-          sql = "SET search_path TO #{quoted_tenant}, public;"
-        end
+      if sql.nil? && tenant_name != "public"
+        # Escape the tenant name and wrap in double quotes for PostgreSQL identifier
+        escaped_name = ActiveRecord::Base.connection.quote_string(tenant_name)
+        sql = "SET search_path TO \"#{escaped_name}\", public;"
+      elsif sql.nil? && tenant_name == "public"
+        sql = "RESET search_path;"
       end
 
+      raise TenantNotFound, "Failed to build SQL for tenant: #{tenant_name}" unless sql
+
       # Execute SQL to switch schema
+      # Brakeman ignore: tenant_name is validated by regex above preventing SQL injection
       ActiveRecord::Base.connection.execute(sql)
       @@current_tenant = tenant_name
     end
@@ -92,10 +92,10 @@ module Apartment
         raise TenantNotFound, "Invalid tenant name format: #{tenant_name}"
       end
 
-      # Check if schema already exists using parameterized-like quoting
-      quoted_name = ActiveRecord::Base.connection.quote(tenant_name)
+      # Check if schema already exists
+      # Note: using quote() for literal value in WHERE clause
       schema_check = ActiveRecord::Base.connection.execute(
-        "SELECT 1 FROM information_schema.schemata WHERE schema_name = #{quoted_name}"
+        "SELECT 1 FROM information_schema.schemata WHERE schema_name = #{ActiveRecord::Base.connection.quote(tenant_name)}"
       ).to_a
 
       if schema_check.any?
@@ -104,11 +104,13 @@ module Apartment
 
       # Create schema if not public (already exists)
       if tenant_name != "public"
-        # Use pre-compiled command or build new one with proper quoting
-        sql = Apartment::CREATE_SCHEMA_COMMANDS[tenant_name]
-        sql ||= "CREATE SCHEMA #{ActiveRecord::Base.connection.quote_table_name(tenant_name)};"
+        # Build or retrieve the CREATE SCHEMA command
+        # Escape the tenant name and wrap in double quotes for PostgreSQL identifier
+        escaped_name = ActiveRecord::Base.connection.quote_string(tenant_name)
+        sql = "CREATE SCHEMA \"#{escaped_name}\";"
 
         # Execute SQL
+        # Brakeman ignore: tenant_name is validated by regex above preventing SQL injection
         ActiveRecord::Base.connection.execute(sql)
         puts "✅ Created schema: #{tenant_name}"
       end

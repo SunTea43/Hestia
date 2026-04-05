@@ -1,8 +1,13 @@
 require "test_helper"
 
 class DocumentTypesControllerTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+  fixtures :all
+
   setup do
+    @gestor = users(:gestor)
     @document_type = document_types(:one)
+    sign_in @gestor
   end
 
   test "should get index" do
@@ -39,8 +44,9 @@ class DocumentTypesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy document_type" do
+    new_type = DocumentType.create!(name: "ToDelete", icon: "trash", color: "#000000")
     assert_difference("DocumentType.count", -1) do
-      delete document_type_url(@document_type)
+      delete document_type_url(new_type)
     end
 
     assert_redirected_to document_types_url

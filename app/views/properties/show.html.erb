@@ -92,7 +92,7 @@
 
       <% if @property.rent? %>
         <div class="card border-0 shadow-sm rounded-4 p-4">
-          <h5 class="fw-bold mb-4">Documentos y Ocupantes</h5>
+          <h5 class="fw-bold mb-4">Inquilino Actual</h5>
           <% if @property.documents.any? %>
             <% document = @property.documents.last %>
             <div class="d-flex align-items-center gap-3 mb-3">
@@ -101,14 +101,13 @@
               </div>
               <div>
                 <h6 class="fw-bold mb-0"><%= document.occupant.name %></h6>
-                <small class="text-muted">Último documento: <%= document.document_type&.name %> (<%= document.start_date&.strftime("%d/%m/%Y") %>)</small>
+                <small class="text-muted">Desde: <%= document.start_date.strftime("%d/%m/%Y") %></small>
               </div>
             </div>
-            <%= link_to "Ver Todos los Documentos", documents_path(property_id: @property.id), class: "btn btn-light w-100 rounded-3 mb-2" %>
-            <%= link_to "Nuevo Documento", new_document_path(property_id: @property.id), class: "btn btn-outline-primary w-100 rounded-3" %>
+            <%= link_to "Ver Documento", "#", class: "btn btn-light w-100 rounded-3" %>
           <% else %>
-            <p class="text-muted small">Este inmueble no tiene documentos vinculados.</p>
-            <%= link_to "Vincular Inquilino / Documento", new_document_path(property_id: @property.id), class: "btn btn-outline-primary w-100 rounded-3" %>
+            <p class="text-muted small">Este inmueble no tiene un documento de arrendamiento activo.</p>
+            <%= link_to "Vincular Inquilino", new_document_path(property_id: @property.id), class: "btn btn-outline-primary w-100 rounded-3" %>
           <% end %>
         </div>
       <% end %>

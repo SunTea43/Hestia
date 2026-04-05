@@ -1,4 +1,5 @@
 one:
+  document_type: one
   property: one
   occupant: inquilino
   start_date: <%= Date.today %>
