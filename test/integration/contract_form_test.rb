@@ -21,12 +21,10 @@ class ContractFormTest < ActionDispatch::IntegrationTest
       price: 1500
     )
 
-    @tenant = User.create!(
-      name: "Test Tenant",
-      email: "tenant-#{SecureRandom.hex(4)}@example.com",
-      password: "password123",
-      password_confirmation: "password123",
-      role: :inquilino
+    @occupant = Occupant.create!(
+      name: "Test Occupant",
+      email: "occupant-#{SecureRandom.hex(4)}@example.com",
+      document_number: "#{SecureRandom.hex(4)}"
     )
   end
 
@@ -64,7 +62,7 @@ class ContractFormTest < ActionDispatch::IntegrationTest
       post contracts_path, params: {
         contract: {
           property_id: @property.id,
-          tenant_id: @tenant.id,
+          occupant_id: @occupant.id,
           start_date: Date.today,
           end_date: Date.today + 1.year,
           tenant_income: 2000
@@ -76,6 +74,6 @@ class ContractFormTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     contract = Contract.last
     assert_equal @property.id, contract.property_id
-    assert_equal @tenant.id, contract.tenant_id
+    assert_equal @occupant.id, contract.occupant_id
   end
 end

@@ -1,18 +1,5 @@
 require "test_helper"
 
 class PropertyPolicyTest < ActiveSupport::TestCase
-  def test_scope
-  end
-
-  def test_show
-  end
-
-  def test_create
-  end
-
-  def test_update
-  end
-
-  def test_destroy
-  end
+  # Policy tests to be implemented
 end

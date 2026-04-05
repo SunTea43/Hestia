@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_23_045712) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_02_120020) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -46,13 +46,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_23_045712) do
     t.text "co_debtor_info"
     t.datetime "created_at", null: false
     t.date "end_date"
+    t.bigint "occupant_id", null: false
     t.bigint "property_id", null: false
     t.date "start_date"
-    t.bigint "tenant_id", null: false
     t.decimal "tenant_income"
     t.datetime "updated_at", null: false
+    t.index ["occupant_id"], name: "index_contracts_on_occupant_id"
     t.index ["property_id"], name: "index_contracts_on_property_id"
-    t.index ["tenant_id"], name: "index_contracts_on_tenant_id"
+  end
+
+  create_table "occupants", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "document_number"
+    t.string "email"
+    t.string "name", null: false
+    t.string "phone"
+    t.datetime "updated_at", null: false
+    t.index ["document_number"], name: "index_occupants_on_document_number"
+    t.index ["email"], name: "index_occupants_on_email"
   end
 
   create_table "properties", force: :cascade do |t|
@@ -91,7 +102,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_23_045712) do
   add_foreign_key "charges", "contracts"
   add_foreign_key "company_managers", "companies"
   add_foreign_key "company_managers", "users"
+  add_foreign_key "contracts", "occupants"
   add_foreign_key "contracts", "properties"
-  add_foreign_key "contracts", "users", column: "tenant_id"
   add_foreign_key "properties", "companies"
 end

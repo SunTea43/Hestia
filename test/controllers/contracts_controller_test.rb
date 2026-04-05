@@ -2,6 +2,7 @@ require "test_helper"
 
 class ContractsControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
+  fixtures :all
 
   setup do
     @user = users(:gestor)

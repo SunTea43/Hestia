@@ -1,0 +1,5 @@
+inquilino:
+  name: Maria Inquilino
+  email: inquilino@example.com
+  document_number: "87654321"
+  phone: "3001234567"

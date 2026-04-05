@@ -1,6 +1,7 @@
 require "application_system_test_case"
 
 class PropertiesTest < ApplicationSystemTestCase
+  fixtures :all
   setup do
     @user = users(:gestor)
     @company = companies(:hestia)

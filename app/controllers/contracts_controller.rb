@@ -14,7 +14,7 @@ class ContractsController < ApplicationController
     @contract = Contract.new
     company_ids = current_user.admin? ? Company.pluck(:id) : current_user.company_ids
     @properties = Property.where(company_id: company_ids, category: :rent)
-    @tenants = User.inquilino
+    @occupants = Occupant.all
 
     # Pre-select property if provided
     if params[:property_id].present?
@@ -29,7 +29,7 @@ class ContractsController < ApplicationController
     else
       company_ids = current_user.admin? ? Company.pluck(:id) : current_user.company_ids
       @properties = Property.where(company_id: company_ids, category: :rent)
-      @tenants = User.inquilino
+      @occupants = Occupant.all
       render :new, status: :unprocessable_entity
     end
   end
@@ -37,6 +37,6 @@ class ContractsController < ApplicationController
   private
 
   def contract_params
-    params.require(:contract).permit(:property_id, :tenant_id, :start_date, :end_date, :tenant_income, :co_debtor_info)
+    params.require(:contract).permit(:property_id, :occupant_id, :start_date, :end_date, :tenant_income, :co_debtor_info)
   end
 end

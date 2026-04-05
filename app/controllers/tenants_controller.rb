@@ -6,7 +6,7 @@ class TenantsController < ApplicationController
   def index
     # For now, show all tenants registered in properties of companies managed by current_user
     company_ids = current_user.company_ids
-    @tenants = User.inquilino.joins(contracts: :property).where(properties: { company_id: company_ids }).distinct
+    @tenants = Occupant.joins(contracts: :property).where(properties: { company_id: company_ids }).distinct
   end
 
   def show

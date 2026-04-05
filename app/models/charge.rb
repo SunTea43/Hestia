@@ -1,3 +1,6 @@
+# Cargo/pago asociado a un Contrato
+# Vive en TENANT SCHEMA
+
 class Charge < ApplicationRecord
   belongs_to :contract
 

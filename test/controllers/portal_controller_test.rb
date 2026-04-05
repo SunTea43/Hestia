@@ -2,6 +2,7 @@ require "test_helper"
 
 class PortalControllerTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
+  fixtures :all
 
   setup do
     @user = users(:inquilino)
