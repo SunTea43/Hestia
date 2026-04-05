@@ -1,0 +1,44 @@
+<div class="card border-0 shadow-sm rounded-4 p-4">
+  <%= form_with(model: document_type) do |form| %>
+    <% if document_type.errors.any? %>
+      <div class="alert alert-danger rounded-3 border-0">
+        <h6 class="fw-bold"><%= pluralize(document_type.errors.count, "error") %> impidieron guardar:</h6>
+        <ul class="mb-0 small">
+          <% document_type.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="row g-3">
+      <div class="col-md-12">
+        <%= form.label :name, "Nombre del Tipo", class: "form-label fw-bold" %>
+        <%= form.text_field :name, class: "form-control rounded-3", placeholder: "Ej: Factura de Servicios" %>
+      </div>
+
+      <div class="col-md-6">
+        <%= form.label :icon, "Icono (Lucide)", class: "form-label fw-bold" %>
+        <%= form.text_field :icon, class: "form-control rounded-3", placeholder: "Ej: file-text, receipt, shield..." %>
+        <small class="text-muted">Usa nombres de <a href="https://lucide.dev/icons" target="_blank">Lucide Icons</a>.</small>
+      </div>
+
+      <div class="col-md-6">
+        <%= form.label :color, "Color Representativo (Hex)", class: "form-label fw-bold" %>
+        <%= form.color_field :color, class: "form-control form-control-color w-100 rounded-3", value: document_type.color || "#D4AF37" %>
+      </div>
+
+      <div class="col-12">
+        <%= form.label :description, "Descripción / Propósito", class: "form-label fw-bold" %>
+        <%= form.text_area :description, rows: 3, class: "form-control rounded-3", placeholder: "Describe para qué se usará este tipo de documento..." %>
+      </div>
+
+      <div class="col-12 mt-4">
+        <div class="d-flex gap-2">
+          <%= form.submit "Guardar Tipo", class: "btn btn-hestia px-4 py-2 rounded-3 shadow-sm" %>
+          <%= link_to "Cancelar", document_types_path, class: "btn btn-light px-4 py-2 rounded-3" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

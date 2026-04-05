@@ -1,0 +1,63 @@
+<div class="card border-0 shadow-sm rounded-4 p-4">
+  <%= form_with(model: document) do |form| %>
+    <% if document.errors.any? %>
+      <div class="alert alert-danger rounded-3 border-0">
+        <h6 class="fw-bold"><%= pluralize(document.errors.count, "error") %> impidieron guardar:</h6>
+        <ul class="mb-0 small">
+          <% document.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <%= form.label :document_type_id, "Tipo de Documento", class: "form-label fw-bold" %>
+        <%= form.collection_select :document_type_id, DocumentType.all, :id, :name, { prompt: "Seleccionar tipo..." }, { class: "form-select rounded-3" } %>
+      </div>
+
+      <div class="col-md-6">
+        <%= form.label :name, "Título / Referencia", class: "form-label fw-bold" %>
+        <%= form.text_field :name, class: "form-control rounded-3", placeholder: "Ej: Contrato Apto 302" %>
+      </div>
+
+      <div class="col-md-6">
+        <%= form.label :property_id, "Inmueble", class: "form-label fw-bold" %>
+        <%= form.collection_select :property_id, Property.all, :id, :address, { prompt: "Seleccionar inmueble..." }, { class: "form-select rounded-3" } %>
+      </div>
+
+      <div class="col-md-6">
+        <%= form.label :occupant_id, "Inquilino / Ocupante", class: "form-label fw-bold" %>
+        <%= form.collection_select :occupant_id, Occupant.all, :id, :name, { prompt: "Seleccionar inquilino..." }, { class: "form-select rounded-3" } %>
+      </div>
+
+      <div class="col-md-6">
+        <%= form.label :start_date, "Fecha Inicio / Emisión", class: "form-label fw-bold" %>
+        <%= form.date_field :start_date, class: "form-control rounded-3" %>
+      </div>
+
+      <div class="col-md-6">
+        <%= form.label :end_date, "Fecha Vencimiento (Opcional)", class: "form-label fw-bold" %>
+        <%= form.date_field :end_date, class: "form-control rounded-3" %>
+      </div>
+
+      <div class="col-12">
+        <%= form.label :status, "Estado", class: "form-label fw-bold" %>
+        <%= form.select :status, [['Borrador', 'draft'], ['Publicado', 'published'], ['Firmado', 'signed'], ['Vencido', 'expired']], {}, { class: "form-select rounded-3" } %>
+      </div>
+
+      <div class="col-12">
+        <%= form.label :body, "Contenido del Documento", class: "form-label fw-bold" %>
+        <%= form.text_area :body, rows: 6, class: "form-control rounded-3", placeholder: "Contenido legal o descripción detallada..." %>
+      </div>
+
+      <div class="col-12 mt-4">
+        <div class="d-flex gap-2">
+          <%= form.submit "Guardar Documento", class: "btn btn-hestia px-4 py-2 rounded-3 shadow-sm" %>
+          <%= link_to "Cancelar", documents_path, class: "btn btn-light px-4 py-2 rounded-3" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

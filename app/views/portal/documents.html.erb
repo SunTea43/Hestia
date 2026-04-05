@@ -13,7 +13,7 @@
         </div>
         <div class="card-body p-0">
           <div class="list-group list-group-flush">
-            <% @contracts.each do |contract| %>
+            <% @documents.each do |document| %>
               <div class="list-group-item px-4 py-4 border-0 border-bottom">
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="d-flex gap-3 align-items-center">
@@ -21,16 +21,16 @@
                       <%= lucide_icon "file-check", class: "text-primary" %>
                     </div>
                     <div>
-                      <h6 class="fw-bold mb-1">Contrato - <%= contract.property.address %></h6>
-                      <small class="text-muted">Vigencia: <%= contract.start_date.strftime("%d/%m/%Y") %> al <%= contract.end_date.strftime("%d/%m/%Y") %></small>
+                      <h6 class="fw-bold mb-1"><%= document.document_type&.name %> - <%= document.property.address %></h6>
+                      <small class="text-muted">Vigencia: <%= (document.start_date&.strftime("%d/%m/%Y") || "N/A") %> al <%= (document.end_date&.strftime("%d/%m/%Y") || "N/A") %></small>
                     </div>
                   </div>
                   <div class="d-flex gap-2">
                     <%= link_to "#", class: "btn btn-outline-primary btn-sm rounded-pill px-3" do %>
                       <%= lucide_icon "download", size: 16, class: "me-1" %> Descargar
                     <% end %>
-                    <% if contract.created_at > 1.day.ago %> <%# Simplified logic for 'to sign' %>
-                      <%= link_to portal_signup_contract_path(contract), class: "btn btn-hestia btn-sm rounded-pill px-3" do %>
+                    <% if document.created_at > 1.day.ago %> <%# Simplified logic for 'to sign' %>
+                      <%= link_to portal_sign_document_path(document), class: "btn btn-hestia btn-sm rounded-pill px-3" do %>
                         <%= lucide_icon "pen-tool", size: 16, class: "me-1" %> Firmar
                       <% end %>
                     <% end %>

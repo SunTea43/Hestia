@@ -1,0 +1,27 @@
+<h1>Nuevo contrato de arrendamiento</h1>
+
+<h1>¡Hola <%= @occupant.name %>!</h1>
+<p>Se ha generado un nuevo documento para ti en <strong>Hestia</strong>:</p>
+
+<div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+  <h3 style="color: #D4AF37; margin-top: 0;"><%= @document.document_type&.name %></h3>
+  <ul style="list-style: none; padding: 0;">
+    <li><strong>Inmueble:</strong> <%= @property.address %></li>
+    <% if @document.tenant_income %>
+      <li><strong>Monto asociado:</strong> <%= number_to_currency(@document.tenant_income) %></li>
+    <% end %>
+    <li><strong>Fecha:</strong> <%= l(@document.start_date, format: :long) if @document.start_date %></li>
+  </ul>
+</div>
+<p>Para ver más detalles y descargar documentos, accede a tu portal:</p>
+
+<p>
+  <%= link_to "Ir a mi portal", @portal_url, style: "background-color: #d4af37; color: #000; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;" %>
+</p>
+
+<p>Si tienes dudas sobre tu contrato, contacta con el gestor inmobiliario.</p>
+
+<p>
+  Saludos,<br>
+  <strong>El equipo de Hestia</strong>
+</p>

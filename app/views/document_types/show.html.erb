@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @document_type %>
+
+<div>
+  <%= link_to "Edit this document type", edit_document_type_path(@document_type) %> |
+  <%= link_to "Back to document types", document_types_path %>
+
+  <%= button_to "Destroy this document type", @document_type, method: :delete %>
+</div>

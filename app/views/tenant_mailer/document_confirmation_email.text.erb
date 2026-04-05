@@ -1,0 +1,22 @@
+Nuevo contrato de arrendamiento
+<%= "=" * 50 %>
+
+¡Hola <%= @occupant.name %>!
+
+Se ha generado un nuevo documento para ti en Hestia:
+
+TIPO: <%= @document.document_type&.name %>
+INMUEBLE: <%= @property.address %>
+FECHA: <%= l(@document.start_date, format: :long) if @document.start_date %>
+<% if @document.tenant_income %>
+MONTO: <%= number_to_currency(@document.tenant_income) %>
+<% end %>
+
+Para ver más detalles y descargar documentos, accede a tu portal:
+
+<%= @portal_url %>
+
+Si tienes dudas sobre tu contrato, contacta con el gestor inmobiliario.
+
+Saludos,
+El equipo de Hestia

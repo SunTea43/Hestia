@@ -4,20 +4,19 @@ class PortalController < ApplicationController
   before_action :set_current_occupant
 
   def dashboard
-    @contracts = @current_occupant&.contracts&.includes(:property) || []
-    @recent_charges = Charge.joins(:contract)
-                            .where(contracts: { occupant_id: @current_occupant&.id })
+    @documents = @current_occupant&.documents&.includes(:property, :document_type) || []
+    @recent_charges = Charge.joins(:document)
+                            .where(documents: { occupant_id: @current_occupant&.id })
                             .order(due_date: :desc).limit(5)
   end
 
   def documents
-    @contracts = @current_occupant&.contracts&.includes(:property) || []
-    # In a real app, we would have a Documents model linked here
+    @documents = @current_occupant&.documents&.includes(:property, :document_type) || []
   end
 
   def payments
-    @charges = Charge.joins(:contract)
-                     .where(contracts: { occupant_id: @current_occupant&.id })
+    @charges = Charge.joins(:document)
+                     .where(documents: { occupant_id: @current_occupant&.id })
                      .order(due_date: :desc)
   end
 
@@ -25,8 +24,8 @@ class PortalController < ApplicationController
     # Placeholder for support requests logic
   end
 
-  def signup_contract
-    @contract = @current_occupant&.contracts&.find(params[:id])
+  def sign_document
+    @document = @current_occupant&.documents&.find(params[:id])
   end
 
   private

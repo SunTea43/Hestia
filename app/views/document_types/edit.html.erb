@@ -1,0 +1,12 @@
+<% content_for :title, "Editing document type" %>
+
+<h1>Editing document type</h1>
+
+<%= render "form", document_type: @document_type %>
+
+<br>
+
+<div>
+  <%= link_to "Show this document type", @document_type %> |
+  <%= link_to "Back to document types", document_types_path %>
+</div>

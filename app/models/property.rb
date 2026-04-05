@@ -3,8 +3,8 @@
 
 class Property < ApplicationRecord
   belongs_to :company
-  has_many :contracts, dependent: :destroy
-  has_many :charges, through: :contracts
+  has_many :documents, dependent: :destroy
+  has_many :charges, through: :documents
 
   enum :category, { rent: 0, sale: 1 }
 

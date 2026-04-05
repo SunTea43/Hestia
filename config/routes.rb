@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :documents
+  resources :document_types
   root "home#index"
 
   resources :properties
@@ -10,7 +12,7 @@ Rails.application.routes.draw do
     get "documents", to: "portal#documents", as: :portal_documents
     get "payments", to: "portal#payments", as: :portal_payments
     get "support_requests", to: "portal#support_requests", as: :portal_support_requests
-    get "signup_contract/:id", to: "portal#signup_contract", as: :portal_signup_contract
+    get "sign_document/:id", to: "portal#sign_document", as: :portal_sign_document
   end
 
   devise_for :users

@@ -10,8 +10,8 @@
 class Company < ApplicationRecord
   has_many :properties, dependent: :destroy
   has_many :company_managers, dependent: :destroy
-  has_many :contracts, through: :properties
-  has_many :charges, through: :contracts
+  has_many :documents, through: :properties
+  has_many :charges, through: :documents
 
   validates :name, presence: true
 end

@@ -16,7 +16,7 @@ class PropertyPolicy < ApplicationPolicy
   end
 
   def show?
-    user.admin? || user.gestor? || user.contracts.exists?(property_id: record.id)
+    user.admin? || user.gestor? || (user.inquilino? && Occupant.find_by(email: user.email)&.documents&.exists?(property_id: record.id))
   end
 
   def create?

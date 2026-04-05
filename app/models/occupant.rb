@@ -3,9 +3,9 @@
 # One Occupant can have MULTIPLE Contracts (puede rentar varias propiedades)
 
 class Occupant < ApplicationRecord
-  has_many :contracts, dependent: :restrict_with_error
-  has_many :properties, through: :contracts
-  has_many :charges, through: :contracts
+  has_many :documents, dependent: :restrict_with_error
+  has_many :properties, through: :documents
+  has_many :charges, through: :documents
 
   validates :name, :email, presence: true
   validates :email, uniqueness: { scope: :id }, format: { with: URI::MailTo::EMAIL_REGEXP }
