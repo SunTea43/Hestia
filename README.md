@@ -84,4 +84,4 @@ rails test:system
 ```
 
 ---
-Developed with ❤️ by Antigravity for the Hestia Project.
+Developed with ❤️ and Antigravity for the Hestia Project.
