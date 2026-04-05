@@ -65,7 +65,7 @@ module Apartment
 
       # Try to get pre-compiled SQL command (for performance on known tenants)
       sql = Apartment::SET_SEARCH_PATH_COMMANDS[tenant_name]
-      
+
       # If not available, build dynamically using proper quoting
       unless sql
         if tenant_name == "public"
