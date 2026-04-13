@@ -80,5 +80,8 @@ gem "pundit", "~> 2.5"
 # Icons
 gem "lucide-rails", "~> 0.7.3"
 
+# WYSIWYG Editor for document editing
+gem "tinymce-rails", "~> 5.0"
+
 # PostgreSQL adapter for manual multitenancy (schema isolation)
 # No external gem needed - using PostgreSQL search_path for schema switching
