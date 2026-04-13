@@ -21,7 +21,7 @@
                       <%= lucide_icon "file-check", class: "text-primary" %>
                     </div>
                     <div>
-                      <h6 class="fw-bold mb-1"><%= document.document_type&.name %> - <%= document.property.address %></h6>
+                      <h6 class="fw-bold mb-1"><%= document.name || 'Documento' %> - <%= document.property.address %></h6>
                       <small class="text-muted">Vigencia: <%= (document.start_date&.strftime("%d/%m/%Y") || "N/A") %> al <%= (document.end_date&.strftime("%d/%m/%Y") || "N/A") %></small>
                     </div>
                   </div>

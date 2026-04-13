@@ -5,7 +5,7 @@ Nuevo contrato de arrendamiento
 
 Se ha generado un nuevo documento para ti en Hestia:
 
-TIPO: <%= @document.document_type&.name %>
+DOCUMENTO: <%= @document.name || 'Documento' %>
 INMUEBLE: <%= @property.address %>
 FECHA: <%= l(@document.start_date, format: :long) if @document.start_date %>
 <% if @document.tenant_income %>

@@ -91,7 +91,7 @@
       </div>
 
       <% if @property.rent? %>
-        <div class="card border-0 shadow-sm rounded-4 p-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
           <h5 class="fw-bold mb-4">Inquilino Actual</h5>
           <% if @property.documents.any? %>
             <% document = @property.documents.last %>
@@ -104,13 +104,42 @@
                 <small class="text-muted">Desde: <%= document.start_date.strftime("%d/%m/%Y") %></small>
               </div>
             </div>
-            <%= link_to "Ver Documento", "#", class: "btn btn-light w-100 rounded-3" %>
+            <%= link_to "Ver Documento", document_path(document), class: "btn btn-light w-100 rounded-3" %>
           <% else %>
             <p class="text-muted small">Este inmueble no tiene un documento de arrendamiento activo.</p>
             <%= link_to "Vincular Inquilino", new_document_path(property_id: @property.id), class: "btn btn-outline-primary w-100 rounded-3" %>
           <% end %>
         </div>
       <% end %>
+
+      <div class="card border-0 shadow-sm rounded-4 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold mb-0">Documentos</h5>
+          <%= link_to new_document_path(property_id: @property.id), class: "btn btn-hestia btn-sm rounded-3 d-flex align-items-center gap-1" do %>
+            <%= lucide_icon "plus", size: 16 %>
+            Nuevo
+          <% end %>
+        </div>
+        
+        <% @property.documents.root.each do |document| %>
+          <div class="d-flex align-items-center gap-2 p-2 mb-2 bg-light rounded-3">
+            <div class="bg-hestia-gold bg-opacity-10 p-2 rounded-2">
+              <%= lucide_icon "file", size: 16, class: "text-hestia-gold" %>
+            </div>
+            <div class="flex-grow-1">
+              <div class="fw-bold small"><%= document.name || 'Sin título' %></div>
+              <small class="text-muted"><%= document.occupant.name %></small>
+            </div>
+            <%= link_to document_path(document), class: "btn btn-sm btn-outline-primary rounded-2 p-1" do %>
+              <%= lucide_icon "eye", size: 14 %>
+            <% end %>
+          </div>
+        <% end %>
+        
+        <% if @property.documents.root.empty? %>
+          <p class="text-muted small text-center py-3">No hay documentos registrados</p>
+        <% end %>
+      </div>
     </div>
   </div>
 </div>

@@ -2,3 +2,8 @@ hestia:
   name: Inmobiliaria Hestia
   nit: 900123456
   address: Calle 123
+
+acme_residential:
+  name: ACME Residencial
+  nit: 900.123.456-1
+  address: Calle 123 # 45-67

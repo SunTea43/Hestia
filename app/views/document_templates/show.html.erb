@@ -1,0 +1,70 @@
+<div class="d-flex justify-content-between align-items-center mb-4 pt-3">
+  <div>
+    <h1 class="fw-bold mb-0 text-dark"><%= @document_template.name %></h1>
+    <p class="text-muted">Detalle de la plantilla de documento</p>
+  </div>
+  <div class="d-flex gap-2">
+    <%= link_to edit_document_template_path(@document_template), class: "btn btn-hestia d-flex align-items-center gap-2 px-4 py-2 rounded-3 shadow-sm" do %>
+      <%= lucide_icon "edit-3", size: 20 %>
+      Editar
+    <% end %>
+    <%= link_to document_templates_path, class: "btn btn-outline-secondary d-flex align-items-center gap-2 px-4 py-2 rounded-3 shadow-sm" do %>
+      <%= lucide_icon "arrow-left", size: 20 %>
+      Volver
+    <% end %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+      <h5 class="fw-bold mb-3">Contenido de la Plantilla</h5>
+      <div class="bg-light rounded-3 p-4">
+        <%= sanitize(@document_template.body) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+      <h5 class="fw-bold mb-3">Información</h5>
+      <div class="mb-3">
+        <small class="text-muted fw-bold">Descripción</small>
+        <div class="text-dark"><%= @document_template.description || 'Sin descripción' %></div>
+      </div>
+      <div class="mb-3">
+        <small class="text-muted fw-bold">Carpeta Padre</small>
+        <div class="text-dark">
+          <% if @document_template.parent %>
+            <%= @document_template.parent.name %>
+          <% else %>
+            Raíz (sin carpeta padre)
+          <% end %>
+        </div>
+      </div>
+      <div class="mb-3">
+        <small class="text-muted fw-bold">Carpetas Hijas</small>
+        <div class="text-dark"><%= @document_template.children.count %> carpetas</div>
+      </div>
+      <div class="mb-3">
+        <small class="text-muted fw-bold">Documentos usando esta plantilla</small>
+        <div class="text-dark"><%= @document_template.documents.count %> documentos</div>
+      </div>
+    </div>
+
+    <% if @document_template.children.any? %>
+      <div class="card border-0 shadow-sm rounded-4 p-4">
+        <h5 class="fw-bold mb-3">Carpetas Hijas</h5>
+        <ul class="list-group list-group-flush">
+          <% @document_template.children.each do |child| %>
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+              <%= link_to child.name, document_template_path(child), class: "text-decoration-none text-dark" %>
+              <span class="badge bg-secondary rounded-pill"><%= child.documents.count %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+</div>
+

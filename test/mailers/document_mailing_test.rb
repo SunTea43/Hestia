@@ -24,7 +24,6 @@ class DocumentMailingTest < ActionMailer::TestCase
 
     assert_emails 1 do
       Document.create!(
-        document_type: @doc_type,
         property: property,
         occupant: occupant,
         start_date: Date.today,
@@ -70,7 +69,6 @@ class DocumentMailingTest < ActionMailer::TestCase
 
     assert_emails 1 do
       Document.create!(
-        document_type: @doc_type,
         property: property,
         occupant: occupant,
         start_date: "2026-04-15",
@@ -106,7 +104,6 @@ class DocumentMailingTest < ActionMailer::TestCase
     assert_emails 1 do
       # Create document (sends document confirmation email)
       Document.create!(
-        document_type: @doc_type,
         property: property,
         occupant: occupant,
         start_date: Date.today,

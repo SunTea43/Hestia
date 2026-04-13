@@ -36,9 +36,7 @@ class TenantMailerTest < ActionMailer::TestCase
       email: "maria@example.com",
       document_number: "22222222"
     )
-    doc_type = DocumentType.create!(name: "Contrato", icon: "file-text", color: "#000000")
     document = Document.create!(
-      document_type: doc_type,
       property: property,
       occupant: occupant,
       start_date: Date.today,
@@ -74,11 +72,9 @@ class TenantMailerTest < ActionMailer::TestCase
       email: "ana@example.com",
       document_number: "33333333"
     )
-    doc_type = DocumentType.create!(name: "Contrato", icon: "file-text", color: "#000000")
 
     assert_emails 1 do
       Document.create!(
-        document_type: doc_type,
         property: property,
         occupant: occupant,
         start_date: Date.today,

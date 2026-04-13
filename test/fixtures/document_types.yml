@@ -11,3 +11,9 @@ two:
   description: Recibo de pago
   icon: receipt
   color: "#28a745"
+
+contract:
+  name: Contrato de Arrendamiento
+  description: Contrato de arrendamiento
+  icon: file-text
+  color: "#D4AF37"

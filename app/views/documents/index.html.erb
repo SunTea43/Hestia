@@ -4,9 +4,9 @@
     <p class="text-muted">Gestión integral de contratos, recibos y actas</p>
   </div>
   <div class="d-flex gap-2">
-    <%= link_to document_types_path, class: "btn btn-outline-secondary d-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-sm" do %>
-      <%= lucide_icon "settings", size: 18 %>
-      Configurar Tipos
+    <%= link_to document_templates_path, class: "btn btn-outline-secondary d-flex align-items-center gap-2 px-3 py-2 rounded-3 shadow-sm" do %>
+      <%= lucide_icon "file-text", size: 18 %>
+      Plantillas
     <% end %>
     <%= link_to new_document_path, class: "btn btn-hestia d-flex align-items-center gap-2 px-4 py-2 rounded-3 shadow-sm" do %>
       <%= lucide_icon "plus-circle", size: 20 %>
@@ -20,9 +20,10 @@
     <table class="table table-hover align-middle mb-0">
       <thead class="bg-light">
         <tr>
-          <th class="px-4 py-3">Tipo / Título</th>
+          <th class="px-4 py-3">Título</th>
           <th class="py-3">Inmueble</th>
           <th class="py-3">Inquilino</th>
+          <th class="py-3">Plantilla</th>
           <th class="py-3">Periodo / Fecha</th>
           <th class="py-3">Estado</th>
           <th class="py-3 text-end px-4">Acciones</th>
@@ -34,11 +35,13 @@
             <td class="px-4">
               <div class="d-flex align-items-center gap-2">
                 <div class="bg-hestia-gold bg-opacity-10 p-2 rounded-3" style="background-color: rgba(212, 175, 55, 0.1)">
-                  <%= lucide_icon (document.document_type&.icon || "file"), size: 18, class: "text-hestia-gold" %>
+                  <%= lucide_icon "file", size: 18, class: "text-hestia-gold" %>
                 </div>
                 <div>
-                  <div class="fw-bold text-dark"><%= document.document_type&.name %></div>
-                  <small class="text-muted"><%= document.name || 'Sin título' %></small>
+                  <div class="fw-bold text-dark"><%= document.name || 'Sin título' %></div>
+                  <% if document.parent %>
+                    <small class="text-muted">En carpeta: <%= document.parent.name %></small>
+                  <% end %>
                 </div>
               </div>
             </td>
@@ -49,6 +52,15 @@
               <div class="d-flex align-items-center gap-2">
                 <span><%= document.occupant.name %></span>
               </div>
+            </td>
+            <td>
+              <% if document.document_template %>
+                <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-1">
+                  <%= document.document_template.name %>
+                </span>
+              <% else %>
+                <span class="text-muted small">Sin plantilla</span>
+              <% end %>
             </td>
             <td>
               <div class="small">
@@ -67,6 +79,11 @@
               <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1">
                 <%= document.status&.humanize || 'Borrador' %>
               </span>
+              <% if document.file.attached? %>
+                <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-2 py-1 ms-1">
+                  <%= lucide_icon "paperclip", size: 12 %>
+                </span>
+              <% end %>
             </td>
             <td class="text-end px-4">
               <div class="btn-group">
@@ -76,13 +93,18 @@
                 <%= link_to edit_document_path(document), class: "btn btn-outline-warning btn-sm rounded-3 p-2 mx-1", title: "Editar" do %>
                   <%= lucide_icon "edit-3", size: 18 %>
                 <% end %>
+                <%= link_to new_document_path(parent_id: document.id), 
+                    class: "btn btn-outline-secondary btn-sm rounded-3 p-2 mx-1", 
+                    title: "Agregar subdocumento" do %>
+                  <%= lucide_icon "folder-plus", size: 18 %>
+                <% end %>
               </div>
             </td>
           </tr>
         <% end %>
         <% if @documents.empty? %>
           <tr>
-            <td colspan="6" class="text-center py-5 text-muted">
+            <td colspan="7" class="text-center py-5 text-muted">
               No hay documentos registrados.
             </td>
           </tr>

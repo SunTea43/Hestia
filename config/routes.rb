@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :document_templates
   resources :documents
   resources :document_types
   root "home#index"
