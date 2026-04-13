@@ -257,6 +257,51 @@ puts "\n1️⃣1️⃣ Resetting to public schema..."
 Apartment::Tenant.reset
 puts "✅ Back to public schema"
 
+# ========== SEED DOCUMENT TYPES (Shared across all tenants) ==========
+
+puts "\n1️⃣2️⃣ Creating default document types..."
+document_types = [
+  {
+    name: 'Certificado de Tradición y Libertad',
+    description: 'Documento que certifica la historia jurídica del inmueble',
+    icon: 'scroll',
+    color: '#D4AF37'
+  },
+  {
+    name: 'Documento de Identidad - Propietario',
+    description: 'Copia de cédula del propietario del inmueble',
+    icon: 'user',
+    color: '#3498DB'
+  },
+  {
+    name: 'Documento de Identidad - Inquilino',
+    description: 'Copia de cédula del inquilino del arrendamiento',
+    icon: 'users',
+    color: '#2ECC71'
+  },
+  {
+    name: 'Contrato de Cesión de Administración',
+    description: 'Contrato entre propietario e inmobiliaria para administración del inmueble',
+    icon: 'file-check',
+    color: '#E74C3C'
+  },
+  {
+    name: 'Contrato de Arrendamiento',
+    description: 'Contrato de arrendamiento entre inquilino e inmobiliaria/administrador',
+    icon: 'file-text',
+    color: '#9B59B6'
+  }
+]
+
+document_types.each do |dt|
+  DocumentType.find_or_create_by!(name: dt[:name]) do |type|
+    type.description = dt[:description]
+    type.icon = dt[:icon]
+    type.color = dt[:color]
+  end
+  puts "✅ Document Type: #{dt[:name]}"
+end
+
 # ========== SUMMARY ==========
 
 puts "\n" + "=" * 70
