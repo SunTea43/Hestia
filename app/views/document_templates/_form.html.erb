@@ -1,0 +1,61 @@
+<div class="card border-0 shadow-sm rounded-4 p-4">
+  <%= form_with(model: document_template) do |form| %>
+    <% if document_template.errors.any? %>
+      <div class="alert alert-danger rounded-3 border-0">
+        <h6 class="fw-bold"><%= pluralize(document_template.errors.count, "error") %> impidieron guardar:</h6>
+        <ul class="mb-0 small">
+          <% document_template.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <%= form.label :name, "Nombre de la Plantilla", class: "form-label fw-bold" %>
+        <%= form.text_field :name, class: "form-control rounded-3", placeholder: "Ej: Contrato de Arrendamiento" %>
+      </div>
+
+      <div class="col-md-6">
+        <%= form.label :parent_id, "Carpeta Padre (Opcional)", class: "form-label fw-bold" %>
+        <%= form.collection_select :parent_id, DocumentTemplate.root, :id, :name, { prompt: "Sin carpeta padre (raíz)" }, { class: "form-select rounded-3" } %>
+      </div>
+
+      <div class="col-12">
+        <%= form.label :description, "Descripción", class: "form-label fw-bold" %>
+        <%= form.text_area :description, rows: 3, class: "form-control rounded-3", placeholder: "Descripción breve del propósito de esta plantilla..." %>
+      </div>
+
+      <div class="col-12">
+        <%= form.label :body, "Contenido de la Plantilla", class: "form-label fw-bold" %>
+        <%= form.text_area :body, class: "tinymce rounded-3", rows: 15, placeholder: "Escribe el contenido de la plantilla aquí..." %>
+      </div>
+
+      <div class="col-12 mt-4">
+        <div class="d-flex gap-2">
+          <%= form.submit "Guardar Plantilla", class: "btn btn-hestia px-4 py-2 rounded-3 shadow-sm" %>
+          <%= link_to "Cancelar", document_templates_path, class: "btn btn-light px-4 py-2 rounded-3" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  tinymce.init({
+    selector: '.tinymce',
+    height: 400,
+    menubar: true,
+    plugins: [
+      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+      'anchor', 'searchreplace', 'visualblocks', 'fullscreen',
+      'insertdatetime', 'media', 'table', 'help', 'wordcount'
+    ],
+    toolbar: 'undo redo | blocks | ' +
+      'bold italic backcolor | alignleft aligncenter ' +
+      'alignright alignjustify | bullist numlist outdent indent | ' +
+      'removeformat | help',
+    content_style: 'body { font-family:Inter,sans-serif; font-size:14px }'
+  });
+</script>
