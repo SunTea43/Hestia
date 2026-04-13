@@ -4,7 +4,7 @@
 <p>Se ha generado un nuevo documento para ti en <strong>Hestia</strong>:</p>
 
 <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
-  <h3 style="color: #D4AF37; margin-top: 0;"><%= @document.document_type&.name %></h3>
+  <h3 style="color: #D4AF37; margin-top: 0;"><%= @document.name || 'Documento' %></h3>
   <ul style="list-style: none; padding: 0;">
     <li><strong>Inmueble:</strong> <%= @property.address %></li>
     <% if @document.tenant_income %>

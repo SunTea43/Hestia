@@ -1,6 +1,8 @@
 require "test_helper"
 
 class DocumentTest < ActiveSupport::TestCase
+  fixtures :documents, :properties, :occupants, :companies
+
   def setup
     @document = documents(:one)
   end
@@ -34,7 +36,6 @@ class DocumentTest < ActiveSupport::TestCase
   test "should have hierarchical structure" do
     parent = documents(:one)
     child = Document.create!(
-      document_type: @document.document_type,
       property: @document.property,
       occupant: @document.occupant,
       start_date: Date.today,
@@ -48,7 +49,6 @@ class DocumentTest < ActiveSupport::TestCase
   test "should destroy children when destroyed" do
     parent = documents(:one)
     Document.create!(
-      document_type: @document.document_type,
       property: @document.property,
       occupant: @document.occupant,
       start_date: Date.today,
@@ -63,7 +63,6 @@ class DocumentTest < ActiveSupport::TestCase
   test "scope root should return documents without parent" do
     parent = documents(:one)
     child = Document.create!(
-      document_type: @document.document_type,
       property: @document.property,
       occupant: @document.occupant,
       start_date: Date.today,

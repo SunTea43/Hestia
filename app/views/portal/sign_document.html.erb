@@ -11,7 +11,7 @@
       <%= lucide_icon "pen-tool", size: 64, class: "text-hestia-gold mb-4 mx-auto" %>
       <h3 class="fw-bold">Firma Electrónica</h3>
       <p class="text-muted mb-5">Estás a punto de firmar el documento:<br>
-      <strong class="text-dark"><%= @document.document_type&.name %> - <%= @document.property.address %></strong></p>
+      <strong class="text-dark"><%= @document.name || 'Documento' %> - <%= @document.property.address %></strong></p>
 
       <div class="bg-light p-5 rounded-4 border-2 border-dashed mb-5" style="border: 2px dashed #dee2e6;">
         <p class="text-muted">Espacio para la firma (Próximamente)</p>

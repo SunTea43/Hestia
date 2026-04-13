@@ -4,10 +4,8 @@ one:
   name: MyString
   description: MyText
   body: MyText
-  parent_id: 1
 
 two:
   name: MyString
   description: MyText
   body: MyText
-  parent_id: 1

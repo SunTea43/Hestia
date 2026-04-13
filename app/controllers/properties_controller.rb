@@ -10,6 +10,10 @@ class PropertiesController < ApplicationController
 
   def show
     authorize @property
+    respond_to do |format|
+      format.html
+      format.json { render json: @property }
+    end
   end
 
   def new

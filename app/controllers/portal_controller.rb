@@ -4,14 +4,14 @@ class PortalController < ApplicationController
   before_action :set_current_occupant
 
   def dashboard
-    @documents = @current_occupant&.documents&.includes(:property, :document_type) || []
+    @documents = @current_occupant&.documents&.includes(:property) || []
     @recent_charges = Charge.joins(:document)
                             .where(documents: { occupant_id: @current_occupant&.id })
                             .order(due_date: :desc).limit(5)
   end
 
   def documents
-    @documents = @current_occupant&.documents&.includes(:property, :document_type) || []
+    @documents = @current_occupant&.documents&.includes(:property) || []
   end
 
   def payments

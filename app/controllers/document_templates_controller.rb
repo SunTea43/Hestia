@@ -9,6 +9,10 @@ class DocumentTemplatesController < ApplicationController
 
   def show
     authorize @document_template
+    respond_to do |format|
+      format.html
+      format.json { render json: @document_template }
+    end
   end
 
   def new

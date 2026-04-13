@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_13_020653) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_13_022213) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -74,9 +74,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_020653) do
     t.text "body"
     t.datetime "created_at", null: false
     t.text "description"
+    t.bigint "document_type_id"
     t.string "name"
     t.integer "parent_id"
     t.datetime "updated_at", null: false
+    t.index ["document_type_id"], name: "index_document_templates_on_document_type_id"
     t.index ["parent_id"], name: "index_document_templates_on_parent_id"
   end
 
@@ -94,7 +96,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_020653) do
     t.text "co_debtor_info"
     t.datetime "created_at", null: false
     t.integer "document_template_id"
-    t.bigint "document_type_id"
     t.date "end_date"
     t.jsonb "metadata"
     t.string "name"
@@ -106,7 +107,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_020653) do
     t.decimal "tenant_income"
     t.datetime "updated_at", null: false
     t.index ["document_template_id"], name: "index_documents_on_document_template_id"
-    t.index ["document_type_id"], name: "index_documents_on_document_type_id"
     t.index ["occupant_id"], name: "index_documents_on_occupant_id"
     t.index ["parent_id"], name: "index_documents_on_parent_id"
     t.index ["property_id"], name: "index_documents_on_property_id"
@@ -162,8 +162,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_020653) do
   add_foreign_key "company_managers", "companies"
   add_foreign_key "company_managers", "users"
   add_foreign_key "document_templates", "document_templates", column: "parent_id"
+  add_foreign_key "document_templates", "document_types"
   add_foreign_key "documents", "document_templates"
-  add_foreign_key "documents", "document_types"
   add_foreign_key "documents", "documents", column: "parent_id"
   add_foreign_key "documents", "occupants"
   add_foreign_key "documents", "properties"

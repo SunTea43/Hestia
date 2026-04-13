@@ -30,7 +30,6 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_difference "Document.count", 1 do
       post documents_url, params: {
         document: {
-          document_type_id: @document.document_type_id,
           property_id: @document.property_id,
           occupant_id: @document.occupant_id,
           name: "New Document",
@@ -48,7 +47,6 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_difference "Document.count", 1 do
       post documents_url, params: {
         document: {
-          document_type_id: @document.document_type_id,
           property_id: @document.property_id,
           occupant_id: @document.occupant_id,
           name: "Document with file",
@@ -66,7 +64,6 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_difference "Document.count", 1 do
       post documents_url, params: {
         document: {
-          document_type_id: @document.document_type_id,
           property_id: @document.property_id,
           occupant_id: @document.occupant_id,
           name: "Child Document",

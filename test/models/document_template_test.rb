@@ -1,6 +1,8 @@
 require "test_helper"
 
 class DocumentTemplateTest < ActiveSupport::TestCase
+  fixtures :companies
+
   def setup
     @template = DocumentTemplate.new(
       name: "Contrato de Arrendamiento",
@@ -64,10 +66,8 @@ class DocumentTemplateTest < ActiveSupport::TestCase
       phone: "+57 300 123 4567",
       document_number: "1234567890"
     )
-    document_type = document_types(:contract)
 
     document = Document.create!(
-      document_type: document_type,
       property: property,
       occupant: occupant,
       start_date: Date.today,
@@ -107,10 +107,8 @@ class DocumentTemplateTest < ActiveSupport::TestCase
       phone: "+57 300 123 4567",
       document_number: "1234567890"
     )
-    document_type = document_types(:contract)
 
     document = Document.create!(
-      document_type: document_type,
       property: property,
       occupant: occupant,
       start_date: Date.today,

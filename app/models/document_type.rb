@@ -1,3 +1,3 @@
 class DocumentType < ApplicationRecord
-  has_many :documents, dependent: :restrict_with_error
+  has_many :document_templates, dependent: :restrict_with_error
 end

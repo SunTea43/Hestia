@@ -1,8 +1,11 @@
 require "test_helper"
 
 class DocumentTemplatesControllerTest < ActionDispatch::IntegrationTest
+  fixtures :document_templates, :users
+
   def setup
     @template = document_templates(:one)
+    sign_in users(:admin)
   end
 
   test "should get index" do

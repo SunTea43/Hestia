@@ -1,4 +1,6 @@
 class DocumentTemplate < ApplicationRecord
+  belongs_to :document_type, optional: true
+
   has_many :children, class_name: "DocumentTemplate", foreign_key: :parent_id, dependent: :destroy
   belongs_to :parent, class_name: "DocumentTemplate", optional: true
 
