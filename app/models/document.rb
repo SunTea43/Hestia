@@ -2,12 +2,20 @@ class Document < ApplicationRecord
   belongs_to :document_type
   belongs_to :property
   belongs_to :occupant
+  belongs_to :document_template, optional: true
+
+  has_many :children, class_name: "Document", foreign_key: :parent_id, dependent: :destroy
+  belongs_to :parent, class_name: "Document", optional: true
+
   has_many :charges, dependent: :destroy
+  has_one_attached :file
 
   # For backward compatibility with previous 'Contract' model fields
   store_accessor :metadata, :tenant_income, :co_debtor_info
 
   validates :start_date, presence: true
+
+  scope :root, -> { where(parent_id: nil) }
 
   after_create :send_confirmation_email
 

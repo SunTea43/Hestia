@@ -74,6 +74,6 @@ class DocumentsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def document_params
-      params.expect(document: [ :document_type_id, :property_id, :occupant_id, :name, :body, :status, :start_date, :end_date, :metadata ])
+      params.expect(document: [ :document_type_id, :property_id, :occupant_id, :name, :body, :status, :start_date, :end_date, :metadata, :parent_id, :document_template_id, :file ])
     end
 end
