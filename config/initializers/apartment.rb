@@ -112,7 +112,6 @@ module Apartment
         # Execute SQL
         # Brakeman ignore: tenant_name is validated by regex above preventing SQL injection
         ActiveRecord::Base.connection.execute(sql)
-        puts "✅ Created schema: #{tenant_name}"
       end
     end
 
@@ -125,6 +124,3 @@ module Apartment
     end
   end
 end
-
-puts "🏢 Multitenancy Configured"
-puts "   Tenants: #{Apartment::TENANT_NAMES.join(', ')}"
