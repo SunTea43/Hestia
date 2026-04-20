@@ -41,6 +41,10 @@
                   <div class="fw-bold text-dark"><%= document.name || 'Sin título' %></div>
                   <% if document.parent %>
                     <small class="text-muted">En carpeta: <%= document.parent.name %></small>
+                  <% elsif document.generated_pdf_attached? %>
+                    <small class="text-primary fw-semibold">PDF generado desde plantilla</small>
+                  <% elsif document.manual_attachment? %>
+                    <small class="text-secondary fw-semibold">Archivo cargado manualmente</small>
                   <% end %>
                 </div>
               </div>
@@ -79,7 +83,15 @@
               <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1">
                 <%= document.status&.humanize || 'Borrador' %>
               </span>
-              <% if document.file.attached? %>
+              <% if document.generated_pdf_attached? %>
+                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1 ms-1">
+                  PDF generado
+                </span>
+              <% elsif document.manual_attachment? %>
+                <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3 py-1 ms-1">
+                  Archivo manual
+                </span>
+              <% elsif document.file.attached? %>
                 <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-2 py-1 ms-1">
                   <%= lucide_icon "paperclip", size: 12 %>
                 </span>

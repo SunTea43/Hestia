@@ -1,0 +1,22 @@
+<div class="document-pdf">
+  <header class="document-pdf__header">
+    <div>
+      <div class="document-pdf__eyebrow">Documento generado</div>
+      <h1><%= @document.display_name %></h1>
+      <p>Plantilla: <%= @document.document_template&.name || "Sin plantilla" %></p>
+    </div>
+    <div class="document-pdf__meta">
+      <p><strong>Inmueble:</strong> <%= @document.property.address %></p>
+      <p><strong>Ocupante:</strong> <%= @document.occupant.name %></p>
+      <p><strong>Fecha:</strong> <%= l(@document.start_date) %></p>
+    </div>
+  </header>
+
+  <main class="document-pdf__body">
+    <%= sanitize(
+      @document.rendered_body,
+      tags: %w[h1 h2 h3 h4 h5 h6 p br strong em u ul ol li table thead tbody tr th td blockquote span div],
+      attributes: %w[class style colspan rowspan]
+    ) %>
+  </main>
+</div>

@@ -10,45 +10,98 @@ class Document < ApplicationRecord
   has_one_attached :file
 
   # For backward compatibility with previous 'Contract' model fields
-  store_accessor :metadata, :tenant_income, :co_debtor_info
+  store_accessor :metadata, :tenant_income, :co_debtor_info, :attachment_origin, :generated_pdf_at, :manual_attachment_at
 
   validates :start_date, presence: true
 
   scope :root, -> { where(parent_id: nil) }
 
-  before_validation :copy_template_content, if: :document_template_id_changed?
-  before_validation :resolve_variables, if: :should_resolve_variables?
   after_create :send_confirmation_email
 
-  def interpolate_body
-    return body unless body
+  def html_template?
+    document_template&.html_template?
+  end
 
-    context = DocumentContext.new(
+  def attachment_template?
+    document_template&.attachment_template?
+  end
+
+  def rendered_body
+    source_body = if html_template? && document_template&.body.present?
+      document_template.body
+    else
+      body
+    end
+
+    return source_body unless source_body.present?
+
+    DocumentVariableResolver.new(document_context).resolve(source_body)
+  end
+
+  def display_name
+    name.presence || document_template&.name || "Documento #{id}"
+  end
+
+  def generated_pdf_attached?
+    file.attached? && attachment_origin == "generated_pdf"
+  end
+
+  def manual_attachment?
+    file.attached? && attachment_origin == "manual_upload"
+  end
+
+  def pdf_filename
+    base_name = display_name
+    "#{base_name.parameterize}.pdf"
+  end
+
+  def attach_generated_pdf!(pdf_binary)
+    file.purge if file.attached?
+
+    file.attach(
+      io: StringIO.new(pdf_binary),
+      filename: pdf_filename,
+      content_type: "application/pdf"
+    )
+
+    update_attachment_metadata!(
+      attachment_origin: "generated_pdf",
+      generated_pdf_at: Time.current.iso8601,
+      manual_attachment_at: nil
+    )
+  end
+
+  def mark_manual_attachment!
+    return unless file.attached?
+
+    update_attachment_metadata!(
+      attachment_origin: "manual_upload",
+      manual_attachment_at: Time.current.iso8601,
+      generated_pdf_at: nil
+    )
+  end
+
+  private
+
+  def update_attachment_metadata!(attributes)
+    updated_metadata = (metadata || {}).merge(attributes.stringify_keys)
+
+    if persisted?
+      update_columns(metadata: updated_metadata, updated_at: Time.current)
+      self.metadata = updated_metadata
+    else
+      self.metadata = updated_metadata
+    end
+  end
+
+  def document_context
+    DocumentContext.new(
       property: property,
       occupant: occupant,
       contract: nil,
       company: property&.company,
       document: self
     )
-
-    resolver = DocumentVariableResolver.new(context)
-    resolver.resolve(body)
-  end
-
-  private
-
-  def copy_template_content
-    return unless document_template && body.blank?
-    self.body = document_template.body
-  end
-
-  def should_resolve_variables?
-    document_template.present? && body.present? && document_template.document_type&.html_template?
-  end
-
-  def resolve_variables
-    return unless should_resolve_variables?
-    self.body = interpolate_body
   end
 
   def send_confirmation_email

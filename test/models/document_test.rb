@@ -1,7 +1,7 @@
 require "test_helper"
 
 class DocumentTest < ActiveSupport::TestCase
-  fixtures :documents, :properties, :occupants, :companies
+  fixtures :documents, :document_templates, :properties, :occupants, :companies
 
   def setup
     @document = documents(:one)
@@ -83,5 +83,50 @@ class DocumentTest < ActiveSupport::TestCase
 
     assert @document.file.attached?
     assert_equal "test.txt", @document.file.filename.to_s
+  end
+
+  test "rendered_body resolves template variables from template source" do
+    template = DocumentTemplate.create!(
+      name: "Contrato base",
+      body: "Contrato de {{propietario.nombre_completo}} y {{inquilino.nombre_completo}}",
+      document_type: DocumentType.create!(name: "Contrato HTML", template_type: "html")
+    )
+
+    @document.update!(document_template: template, body: nil)
+
+    assert_equal "Contrato de Inmobiliaria Hestia y Maria Inquilino", @document.rendered_body
+    assert_nil @document.body
+  end
+
+  test "rendered_body falls back to document body when there is no html template" do
+    @document.body = "Texto libre para {{inquilino.nombre_completo}}"
+
+    assert_equal "Texto libre para Maria Inquilino", @document.rendered_body
+  end
+
+  test "attach_generated_pdf stores a pdf attachment with the document filename" do
+    @document.name = "Contrato Final"
+
+    @document.attach_generated_pdf!("%PDF-1.4")
+
+    assert @document.file.attached?
+    assert_equal "application/pdf", @document.file.content_type
+    assert_equal "contrato-final.pdf", @document.file.filename.to_s
+    assert_equal "generated_pdf", @document.attachment_origin
+    assert @document.generated_pdf_at.present?
+  end
+
+  test "mark_manual_attachment marks uploaded files as manual" do
+    @document.file.attach(
+      io: StringIO.new("manual"),
+      filename: "manual.pdf",
+      content_type: "application/pdf"
+    )
+
+    @document.mark_manual_attachment!
+
+    assert_equal "manual_upload", @document.attachment_origin
+    assert @document.manual_attachment_at.present?
+    assert @document.manual_attachment?
   end
 end

@@ -23,6 +23,14 @@ class DocumentPolicy < ApplicationPolicy
     user.admin? || (user.gestor? && user.company_ids.include?(record.property.company_id)) || (user.inquilino? && record.occupant.email == user.email)
   end
 
+  def download_pdf?
+    show?
+  end
+
+  def regenerate_pdf?
+    update?
+  end
+
   def create?
     user.admin? || user.gestor?
   end

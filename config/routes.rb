@@ -4,6 +4,8 @@ Rails.application.routes.draw do
     member do
       get :sign
       get :download
+      get :download_pdf
+      post :regenerate_pdf
     end
   end
   resources :document_types

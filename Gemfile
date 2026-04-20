@@ -83,5 +83,8 @@ gem "lucide-rails", "~> 0.7.3"
 # WYSIWYG Editor for document editing
 gem "tinymce-rails", "~> 5.0"
 
+# HTML to PDF generation for document templates
+gem "wicked_pdf", "~> 2.8"
+
 # PostgreSQL adapter for manual multitenancy (schema isolation)
 # No external gem needed - using PostgreSQL search_path for schema switching

@@ -26,6 +26,91 @@ class DocumentsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "should show rendered template content" do
+    template = DocumentTemplate.create!(
+      name: "Contrato visible",
+      body: "Contrato de {{propietario.nombre_completo}} con {{inquilino.nombre_completo}}",
+      document_type: DocumentType.create!(name: "HTML visible", template_type: "html")
+    )
+    @document.update!(document_template: template, body: nil)
+
+    get document_url(@document)
+
+    assert_response :success
+    assert_match "Contrato de Inmobiliaria Hestia con Maria Inquilino", response.body
+  end
+
+  test "should regenerate pdf for html template documents" do
+    template = DocumentTemplate.create!(
+      name: "Contrato PDF",
+      body: "Contrato de {{propietario.nombre_completo}} con {{inquilino.nombre_completo}}",
+      document_type: DocumentType.create!(name: "HTML PDF", template_type: "html")
+    )
+    @document.update!(document_template: template, body: nil)
+
+    pdf_binary = "%PDF-1.4 test"
+    call_arguments = nil
+    pdf_stub = Object.new
+    pdf_stub.define_singleton_method(:pdf_from_string) do |html, options|
+      call_arguments = [ html, options ]
+      pdf_binary
+    end
+
+    WickedPdf.singleton_class.alias_method :__original_new_for_test__, :new
+    WickedPdf.define_singleton_method(:new) { |*_args| pdf_stub }
+
+    begin
+      post regenerate_pdf_document_url(@document)
+    ensure
+      WickedPdf.singleton_class.alias_method :new, :__original_new_for_test__
+      WickedPdf.singleton_class.remove_method :__original_new_for_test__
+    end
+
+    assert_redirected_to document_url(@document)
+    assert_includes call_arguments.first, "Contrato de Inmobiliaria Hestia con Maria Inquilino"
+    assert_equal "Pagina [page] de [topage]", call_arguments.last.dig(:footer, :right)
+    assert_equal "Contrato PDF", call_arguments.last.dig(:header, :center)
+
+    @document.reload
+    assert @document.file.attached?
+    assert_equal "contrato-pdf.pdf", @document.file.filename.to_s
+    assert_equal "generated_pdf", @document.attachment_origin
+  end
+
+  test "should download existing generated pdf" do
+    @document.file.attach(
+      io: StringIO.new("%PDF-1.4 stored"),
+      filename: "documento.pdf",
+      content_type: "application/pdf"
+    )
+    @document.update!(metadata: (@document.metadata || {}).merge("attachment_origin" => "generated_pdf"))
+
+    get download_pdf_document_url(@document)
+
+    assert_response :success
+    assert_equal "application/pdf", response.media_type
+    assert_match "%PDF-1.4 stored", response.body
+  end
+
+  test "should redirect pdf download when document has no generated pdf" do
+    get download_pdf_document_url(@document)
+
+    assert_redirected_to document_url(@document)
+  end
+
+  test "should mark uploaded file as manual attachment" do
+    patch document_url(@document), params: {
+      document: {
+        file: fixture_file_upload("test.txt", "text/plain")
+      }
+    }
+
+    assert_redirected_to document_path(@document)
+    @document.reload
+    assert_equal "manual_upload", @document.attachment_origin
+    assert @document.manual_attachment_at.present?
+  end
+
   test "should create document with new fields" do
     assert_difference "Document.count", 1 do
       post documents_url, params: {
