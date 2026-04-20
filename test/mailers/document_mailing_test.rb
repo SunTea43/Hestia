@@ -2,8 +2,7 @@ require "test_helper"
 
 class DocumentMailingTest < ActionMailer::TestCase
   setup do
-    @company = Company.create!(name: "Test Company")
-    @doc_type = DocumentType.create!(name: "Contrato", icon: "file-text", color: "#000000")
+    @company = Company.create!(name: "Test Company #{SecureRandom.hex(4)}")
   end
 
   test "document creation sends confirmation email to occupant" do

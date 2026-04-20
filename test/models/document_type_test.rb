@@ -3,7 +3,7 @@ require "test_helper"
 class DocumentTypeTest < ActiveSupport::TestCase
   setup do
     @document_type = DocumentType.new(
-      name: "Contrato de Arrendamiento",
+      name: "Contrato de Arrendamiento Test",
       description: "Plantilla para contratos",
       template_type: "html"
     )
