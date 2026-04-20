@@ -1,5 +1,5 @@
 class DocumentsController < ApplicationController
-  before_action :set_document, only: %i[ show edit update destroy ]
+  before_action :set_document, only: %i[ show edit update destroy sign download ]
   after_action :verify_authorized
 
   # GET /documents or /documents.json
@@ -63,6 +63,22 @@ class DocumentsController < ApplicationController
     respond_to do |format|
       format.html { redirect_to documents_path, notice: "Documento eliminado exitosamente.", status: :see_other }
       format.json { head :no_content }
+    end
+  end
+
+  # GET /documents/1/sign
+  def sign
+    authorize @document
+    redirect_to @document, alert: "Funcionalidad de firma en desarrollo"
+  end
+
+  # GET /documents/1/download
+  def download
+    authorize @document
+    if @document.file.attached?
+      send_data @document.file.download, filename: @document.file.filename.to_s, type: @document.file.content_type
+    else
+      redirect_to @document, alert: "Este documento no tiene archivo adjunto"
     end
   end
 

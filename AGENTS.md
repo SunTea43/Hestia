@@ -611,6 +611,149 @@ rails assets:precompile # Build assets prod
 
 ---
 
-**Last Updated**: 2 de abril de 2026  
+## 📄 Sistema de Gestión de Documentos
+
+### Estado Actual Implementado
+
+#### 1. Editor TinyMCE
+- **Estado**: Implementado
+- **Descripción**: Se integró TinyMCE como editor WYSIWYG para edición de contenido en documentos y plantillas
+- **Archivos**: 
+  - `Gemfile`: Agregado `tinymce-rails`
+  - `app/views/layouts/application.html.erb`: Incluido JavaScript de TinyMCE
+- **Funcionalidad**: Permite editar contenido HTML con formato rico en formularios de documentos y plantillas
+
+#### 2. Modelo DocumentTemplate
+- **Estado**: Implementado
+- **Descripción**: Modelo para plantillas de documentos con estructura jerárquica
+- **Archivos**:
+  - `app/models/document_template.rb`: Modelo con relaciones jerárquicas
+  - `db/migrate/20260413020502_create_document_templates.rb`: Migración
+- **Campos**:
+  - `name`: Nombre de la plantilla
+  - `description`: Descripción opcional
+  - `body`: Contenido HTML del documento
+  - `parent_id`: Para estructura jerárquica de carpetas
+- **Relaciones**:
+  - `has_many :children` - Subplantillas
+  - `belongs_to :parent` - Carpeta padre
+  - `has_many :documents` - Documentos creados desde esta plantilla
+
+#### 3. CRUD para DocumentTemplates
+- **Estado**: Implementado
+- **Archivos**:
+  - `app/controllers/document_templates_controller.rb`: Controller RESTful
+  - `app/policies/document_template_policy.rb`: Policy de Pundit
+  - `app/views/document_templates/`: Vistas completas (index, show, new, edit, _form)
+- **Funcionalidad**:
+  - Crear, leer, actualizar, eliminar plantillas
+  - Edición de contenido con TinyMCE
+  - Organización jerárquica de carpetas
+
+#### 4. Mejoras al modelo Document
+- **Estado**: Implementado
+- **Archivos**:
+  - `app/models/document.rb`: Modelo actualizado
+  - `db/migrate/20260413020653_add_fields_to_document.rb`: Migración
+- **Nuevos campos**:
+  - `parent_id`: Estructura jerárquica de carpetas
+  - `document_template_id`: Asociación con plantilla
+- **Active Storage**:
+  - `has_one_attached :file`: Carga de archivos (PDF, DOCX, imágenes)
+- **Relaciones jerárquicas**:
+  - `has_many :children` - Subdocumentos
+  - `belongs_to :parent` - Carpeta padre
+
+#### 5. Active Storage
+- **Estado**: Implementado
+- **Archivos**:
+  - `db/migrate/20260413020643_create_active_storage_tables.active_storage.rb`: Migración
+- **Funcionalidad**: Permite adjuntar archivos a documentos
+
+#### 6. Actualización de Documents Controller
+- **Estado**: Implementado
+- **Archivos**: `app/controllers/documents_controller.rb`
+- **Nuevos parámetros permitidos**:
+  - `parent_id`
+  - `document_template_id`
+  - `file`
+
+#### 7. Mejoras en vistas de Documents
+- **Estado**: Implementado
+- **Archivos**:
+  - `app/views/documents/_form.html.erb`
+  - `app/views/documents/index.html.erb`
+- **Funcionalidad**:
+  - TinyMCE para edición de contenido
+  - Selector de plantilla (opcional)
+  - Selector de carpeta padre (opcional)
+  - Campo para carga de archivos
+  - Visualización de archivos adjuntos
+
+#### 8. Seed de tipos de documentos por defecto
+- **Estado**: Implementado
+- **Archivos**: `db/seeds.rb`
+- **Tipos creados**:
+  - Certificado de Tradición y Libertad
+  - Documento de Identidad - Propietario
+  - Documento de Identidad - Inquilino
+  - Contrato de Cesión de Administración
+  - Contrato de Arrendamiento
+
+#### 9. Integración en vista de Property
+- **Estado**: Implementado
+- **Archivos**: `app/views/properties/show.html.erb`
+- **Funcionalidad**:
+  - Sección de documentos en vista de inmueble
+  - Lista de documentos raíz asociados
+  - Botón para crear nuevos documentos desde la vista de propiedad
+
+#### 10. Tests
+- **Estado**: Implementado
+- **Archivos**:
+  - `test/models/document_template_test.rb`
+  - `test/controllers/document_templates_controller_test.rb`
+  - `test/models/document_test.rb`
+  - `test/controllers/documents_controller_test.rb`
+- **Cobertura**: Validaciones, relaciones, scopes, acciones RESTful
+
+### Requerimientos Pendientes
+
+#### Sistema de Variables Dinámicas en Plantillas
+
+**Descripción**: Las plantillas de documentos deben soportar variables dinámicas que se reemplazan automáticamente con datos reales al visualizar o generar un documento desde la plantilla.
+
+**Ejemplo de uso**:
+- Plantilla de contrato de arrendamiento con variables: `{{nombre_inquilino}}`, `{{direccion_propiedad}}`, `{{fecha_inicio}}`
+- Al crear un documento para un inmueble específico con un inquilino, las variables se reemplazan con datos reales
+- El documento final muestra el contrato con el nombre del inquilino, dirección de la propiedad, fechas, etc.
+
+**Variables por tipo de documento**:
+- **Contrato de Arrendamiento**: Variables asociadas a inquilino, gestor, propiedad, fechas, montos
+- **Certificado de Tradición**: Variables asociadas a propiedad, propietario, matrícula
+- **Documento de Identidad**: Variables asociadas a persona, tipo de documento, número
+- **Contrato de Cesión**: Variables asociadas a cedente, cesionario, empresa
+
+**Funcionalidades requeridas**:
+1. Sistema de variables en DocumentType (cada tipo tiene sus variables específicas)
+2. Sistema de reemplazo de variables en Document (al visualizar/crear, reemplazar con datos reales)
+3. Herramientas en editor para insertar variables fácilmente
+4. Vista previa del documento con variables reemplazadas
+
+**Variables disponibles (ejemplo)**:
+- `{{nombre_inquilino}}`: Nombre del ocupante
+- `{{cedula_inquilino}}`: Documento de identidad del inquilino
+- `{{direccion_propiedad}}`: Dirección del inmueble
+- `{{area_propiedad}}`: Área del inmueble
+- `{{precio_renta}}`: Precio de renta
+- `{{fecha_inicio}}`: Fecha de inicio del contrato
+- `{{fecha_fin}}`: Fecha de fin del contrato
+- `{{nombre_gestor}}`: Nombre del gestor asignado
+- `{{nombre_empresa}}`: Nombre de la empresa gestora
+- `{{nit_empresa}}`: NIT de la empresa
+
+---
+
+**Last Updated**: 19 de abril de 2026  
 **Framework Version**: Rails 8.1.2  
 **Ruby Version**: 4.0.0

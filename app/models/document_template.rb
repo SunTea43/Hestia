@@ -7,7 +7,21 @@ class DocumentTemplate < ApplicationRecord
   has_many :documents, dependent: :nullify
 
   validates :name, presence: true
-  validates :body, presence: true
+  validates :body, presence: true, if: :requires_body?
 
   scope :root, -> { where(parent_id: nil) }
+
+  def html_template?
+    document_type&.html_template?
+  end
+
+  def attachment_template?
+    document_type&.attachment_template?
+  end
+
+  private
+
+  def requires_body?
+    document_type.present? && document_type.html_template?
+  end
 end

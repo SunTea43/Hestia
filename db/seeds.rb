@@ -265,31 +265,36 @@ document_types = [
     name: 'Certificado de Tradición y Libertad',
     description: 'Documento que certifica la historia jurídica del inmueble',
     icon: 'scroll',
-    color: '#D4AF37'
+    color: '#D4AF37',
+    template_type: 'attachment'
   },
   {
     name: 'Documento de Identidad - Propietario',
     description: 'Copia de cédula del propietario del inmueble',
     icon: 'user',
-    color: '#3498DB'
+    color: '#3498DB',
+    template_type: 'attachment'
   },
   {
     name: 'Documento de Identidad - Inquilino',
     description: 'Copia de cédula del inquilino del arrendamiento',
     icon: 'users',
-    color: '#2ECC71'
+    color: '#2ECC71',
+    template_type: 'attachment'
   },
   {
     name: 'Contrato de Cesión de Administración',
     description: 'Contrato entre propietario e inmobiliaria para administración del inmueble',
     icon: 'file-check',
-    color: '#E74C3C'
+    color: '#E74C3C',
+    template_type: 'html'
   },
   {
     name: 'Contrato de Arrendamiento',
     description: 'Contrato de arrendamiento entre inquilino e inmobiliaria/administrador',
     icon: 'file-text',
-    color: '#9B59B6'
+    color: '#9B59B6',
+    template_type: 'html'
   }
 ]
 
@@ -298,6 +303,7 @@ document_types.each do |dt|
     type.description = dt[:description]
     type.icon = dt[:icon]
     type.color = dt[:color]
+    type.template_type = dt[:template_type]
   end
   puts "Document Type: #{dt[:name]}"
 end
