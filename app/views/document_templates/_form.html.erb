@@ -55,72 +55,108 @@
     toolbar: 'undo redo | blocks | ' +
       'bold italic backcolor | alignleft aligncenter ' +
       'alignright alignjustify | bullist numlist outdent indent | ' +
-      'insertInquilino insertPropiedad insertContrato insertPropietario insertEmpresa | ' +
+      'insertTenant insertProperty insertContract insertOwner insertCompany | ' +
       'removeformat | help',
     setup: function(editor) {
-      editor.ui.registry.addButton('insertInquilino', {
-        text: 'Inquilino',
+      const translations = {
+        tenant: {
+          label: '<%= j(t("document_variables.tenant.label")) %>',
+          full_name: '<%= j(t("document_variables.tenant.full_name")) %>',
+          document_number: '<%= j(t("document_variables.tenant.document_number")) %>',
+          email: '<%= j(t("document_variables.tenant.email")) %>',
+          phone: '<%= j(t("document_variables.tenant.phone")) %>'
+        },
+        property: {
+          label: '<%= j(t("document_variables.property.label")) %>',
+          address: '<%= j(t("document_variables.property.address")) %>',
+          area: '<%= j(t("document_variables.property.area")) %>',
+          rent_price: '<%= j(t("document_variables.property.rent_price")) %>',
+          type: '<%= j(t("document_variables.property.type")) %>'
+        },
+        contract: {
+          label: '<%= j(t("document_variables.contract.label")) %>',
+          start_date: '<%= j(t("document_variables.contract.start_date")) %>',
+          end_date: '<%= j(t("document_variables.contract.end_date")) %>',
+          deposit_amount: '<%= j(t("document_variables.contract.deposit_amount")) %>',
+          rent_amount: '<%= j(t("document_variables.contract.rent_amount")) %>'
+        },
+        owner: {
+          label: '<%= j(t("document_variables.owner.label")) %>',
+          full_name: '<%= j(t("document_variables.owner.full_name")) %>',
+          nit: '<%= j(t("document_variables.owner.nit")) %>',
+          address: '<%= j(t("document_variables.owner.address")) %>'
+        },
+        company: {
+          label: '<%= j(t("document_variables.company.label")) %>',
+          name: '<%= j(t("document_variables.company.name")) %>',
+          nit: '<%= j(t("document_variables.company.nit")) %>',
+          address: '<%= j(t("document_variables.company.address")) %>'
+        }
+      };
+
+      editor.ui.registry.addButton('insertTenant', {
+        text: translations.tenant.label,
         icon: 'user',
         onAction: function() {
           const menu = [
-            { text: 'Nombre Completo', value: '{{inquilino.nombre_completo}}' },
-            { text: 'Cédula', value: '{{inquilino.cedula}}' },
-            { text: 'Email', value: '{{inquilino.email}}' },
-            { text: 'Teléfono', value: '{{inquilino.telefono}}' }
+            { text: translations.tenant.full_name, value: '{{tenant.full_name}}' },
+            { text: translations.tenant.document_number, value: '{{tenant.document_number}}' },
+            { text: translations.tenant.email, value: '{{tenant.email}}' },
+            { text: translations.tenant.phone, value: '{{tenant.phone}}' }
           ];
           showVariableMenu(editor, menu);
         }
       });
 
-      editor.ui.registry.addButton('insertPropiedad', {
-        text: 'Propiedad',
+      editor.ui.registry.addButton('insertProperty', {
+        text: translations.property.label,
         icon: 'home',
         onAction: function() {
           const menu = [
-            { text: 'Dirección', value: '{{propiedad.direccion}}' },
-            { text: 'Área', value: '{{propiedad.area}}' },
-            { text: 'Precio Renta', value: '{{propiedad.precio_renta}}' },
-            { text: 'Tipo', value: '{{propiedad.tipo}}' }
+            { text: translations.property.address, value: '{{property.address}}' },
+            { text: translations.property.area, value: '{{property.area}}' },
+            { text: translations.property.rent_price, value: '{{property.rent_price}}' },
+            { text: translations.property.type, value: '{{property.type}}' }
           ];
           showVariableMenu(editor, menu);
         }
       });
 
-      editor.ui.registry.addButton('insertContrato', {
-        text: 'Contrato',
+      editor.ui.registry.addButton('insertContract', {
+        text: translations.contract.label,
         icon: 'file',
         onAction: function() {
           const menu = [
-            { text: 'Fecha Inicio', value: '{{contrato.fecha_inicio}}' },
-            { text: 'Fecha Fin', value: '{{contrato.fecha_fin}}' },
-            { text: 'Monto Depósito', value: '{{contrato.monto_deposito}}' },
-            { text: 'Monto Renta', value: '{{contrato.monto_renta}}' }
+            { text: translations.contract.start_date, value: '{{contract.start_date}}' },
+            { text: translations.contract.end_date, value: '{{contract.end_date}}' },
+            { text: translations.contract.deposit_amount, value: '{{contract.deposit_amount}}' },
+            { text: translations.contract.rent_amount, value: '{{contract.rent_amount}}' }
           ];
           showVariableMenu(editor, menu);
         }
       });
 
-      editor.ui.registry.addButton('insertPropietario', {
-        text: 'Propietario',
+      editor.ui.registry.addButton('insertOwner', {
+        text: translations.owner.label,
         icon: 'users',
         onAction: function() {
           const menu = [
-            { text: 'Nombre Completo', value: '{{propietario.nombre_completo}}' },
-            { text: 'NIT', value: '{{propietario.nit}}' },
-            { text: 'Dirección', value: '{{propietario.direccion}}' }
+            { text: translations.owner.full_name, value: '{{owner.full_name}}' },
+            { text: translations.owner.nit, value: '{{owner.nit}}' },
+            { text: translations.owner.address, value: '{{owner.address}}' }
           ];
           showVariableMenu(editor, menu);
         }
       });
 
-      editor.ui.registry.addButton('insertEmpresa', {
-        text: 'Empresa',
+      editor.ui.registry.addButton('insertCompany', {
+        text: translations.company.label,
         icon: 'building',
         onAction: function() {
           const menu = [
-            { text: 'Nombre', value: '{{empresa.nombre}}' },
-            { text: 'NIT', value: '{{empresa.nit}}' },
-            { text: 'Dirección', value: '{{empresa.direccion}}' }
+            { text: translations.company.name, value: '{{company.name}}' },
+            { text: translations.company.nit, value: '{{company.nit}}' },
+            { text: translations.company.address, value: '{{company.address}}' }
           ];
           showVariableMenu(editor, menu);
         }

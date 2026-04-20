@@ -4,39 +4,39 @@ class DocumentVariableResolverTest < ActiveSupport::TestCase
   test "should return available variables" do
     variables = DocumentVariableResolver.available_variables
 
-    assert_includes variables, :inquilino
-    assert_includes variables, :propiedad
-    assert_includes variables, :contrato
-    assert_includes variables, :propietario
-    assert_includes variables, :empresa
+    assert_includes variables, :tenant
+    assert_includes variables, :property
+    assert_includes variables, :contract
+    assert_includes variables, :owner
+    assert_includes variables, :company
   end
 
   test "should return available categories" do
     categories = DocumentVariableResolver.available_categories
 
-    assert_includes categories, :inquilino
-    assert_includes categories, :propiedad
-    assert_includes categories, :contrato
-    assert_includes categories, :propietario
-    assert_includes categories, :empresa
+    assert_includes categories, :tenant
+    assert_includes categories, :property
+    assert_includes categories, :contract
+    assert_includes categories, :owner
+    assert_includes categories, :company
   end
 
-  test "should have correct inquilino variables" do
-    inquilino_vars = DocumentVariableResolver.available_variables[:inquilino]
+  test "should have correct tenant variables" do
+    tenant_vars = DocumentVariableResolver.available_variables[:tenant]
 
-    assert_includes inquilino_vars, :nombre_completo
-    assert_includes inquilino_vars, :cedula
-    assert_includes inquilino_vars, :email
-    assert_includes inquilino_vars, :telefono
+    assert_includes tenant_vars, :full_name
+    assert_includes tenant_vars, :document_number
+    assert_includes tenant_vars, :email
+    assert_includes tenant_vars, :phone
   end
 
-  test "should have correct propiedad variables" do
-    propiedad_vars = DocumentVariableResolver.available_variables[:propiedad]
+  test "should have correct property variables" do
+    property_vars = DocumentVariableResolver.available_variables[:property]
 
-    assert_includes propiedad_vars, :direccion
-    assert_includes propiedad_vars, :area
-    assert_includes propiedad_vars, :precio_renta
-    assert_includes propiedad_vars, :tipo
+    assert_includes property_vars, :address
+    assert_includes property_vars, :area
+    assert_includes property_vars, :rent_price
+    assert_includes property_vars, :type
   end
 
   test "should leave unresolved variables when data is missing" do
@@ -49,10 +49,10 @@ class DocumentVariableResolverTest < ActiveSupport::TestCase
     )
 
     resolver = DocumentVariableResolver.new(empty_context)
-    template = "Nombre: {{inquilino.nombre_completo}}"
+    template = "Name: {{tenant.full_name}}"
     result = resolver.resolve(template)
 
-    assert_match "{{inquilino.nombre_completo}}", result
+    assert_match "{{tenant.full_name}}", result
   end
 
   test "should return original template when no variables present" do
@@ -65,7 +65,7 @@ class DocumentVariableResolverTest < ActiveSupport::TestCase
     )
 
     resolver = DocumentVariableResolver.new(context)
-    template = "Texto sin variables"
+    template = "Text without variables"
     result = resolver.resolve(template)
 
     assert_equal template, result

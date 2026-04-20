@@ -37,10 +37,10 @@ DocumentType.create!(
   description: 'Plantilla para contratos de arrendamiento',
   template_type: 'html',  # Indica que es plantilla HTML
   variables: {
-    inquilino: ['nombre_completo', 'cedula', 'email', 'telefono'],
-    propiedad: ['direccion', 'area', 'precio_renta'],
-    contrato: ['fecha_inicio', 'fecha_fin', 'monto_deposito'],
-    propietario: ['nombre_completo', 'cedula']
+    tenant: ['full_name', 'document_number', 'email', 'phone'],
+    property: ['address', 'area', 'rent_price'],
+    contract: ['start_date', 'end_date', 'deposit_amount'],
+    owner: ['full_name', 'nit']
   }
 )
 ```
@@ -53,13 +53,13 @@ DocumentTemplate.create!(
   document_type_id: document_type.id,
   body: '
     <h1>CONTRATO DE ARRENDAMIENTO</h1>
-    <p>Entre <strong>{{inquilino.nombre_completo}}</strong> (inquilino) y 
-    <strong>{{propietario.nombre_completo}}</strong> (propietario)</p>
-    <p>Dirección del inmueble: {{propiedad.direccion}}</p>
-    <p>Área: {{propiedad.area}} m²</p>
-    <p>Precio renta: ${{propiedad.precio_renta}}</p>
-    <p>Fecha inicio: {{contrato.fecha_inicio}}</p>
-    <p>Fecha fin: {{contrato.fecha_fin}}</p>
+    <p>Entre <strong>{{tenant.full_name}}</strong> (inquilino) y
+    <strong>{{owner.full_name}}</strong> (propietario)</p>
+    <p>Dirección del inmueble: {{property.address}}</p>
+    <p>Área: {{property.area}} m²</p>
+    <p>Precio renta: ${{property.rent_price}}</p>
+    <p>Fecha inicio: {{contract.start_date}}</p>
+    <p>Fecha fin: {{contract.end_date}}</p>
   '
 )
 ```
@@ -84,9 +84,9 @@ DocumentTemplate.create!(
 ### Paso 3: Reemplazo Automático de Variables
 - El sistema detecta el inquilino y propietario asociados al inmueble
 - Reemplaza las variables con datos reales:
-  - `{{inquilino.nombre_completo}}` → "María García López"
-  - `{{propiedad.direccion}}` → "Calle Falsa 123"
-  - `{{contrato.fecha_inicio}}` → "2026-04-19"
+  - `{{tenant.full_name}}` → "María García López"
+  - `{{property.address}}` → "Calle Falsa 123"
+  - `{{contract.start_date}}` → "2026-04-19"
 - El usuario puede editar manualmente después del reemplazo
 
 ### Paso 4: Visualizar Documento
@@ -135,45 +135,54 @@ Las variables están organizadas por categorías para facilitar su uso:
 # Ubicación: app/services/document_variable_resolver.rb
 class DocumentVariableResolver
   VARIABLES = {
-    inquilino: {
-      nombre_completo: ->(context) { context.occupant&.name },
-      cedula: ->(context) { context.occupant&.document_number },
+    tenant: {
+      full_name: ->(context) { context.occupant&.name },
+      document_number: ->(context) { context.occupant&.document_number },
       email: ->(context) { context.occupant&.email },
-      telefono: ->(context) { context.occupant&.phone }
+      phone: ->(context) { context.occupant&.phone }
     },
-    propiedad: {
-      direccion: ->(context) { context.property&.address },
+    property: {
+      address: ->(context) { context.property&.address },
       area: ->(context) { context.property&.area },
-      precio_renta: ->(context) { context.property&.price },
-      tipo: ->(context) { context.property&.property_type }
+      rent_price: ->(context) { context.property&.price },
+      type: ->(context) { context.property&.property_type }
     },
-    contrato: {
-      fecha_inicio: ->(context) { context.contract&.start_date&.strftime('%d/%m/%Y') },
-      fecha_fin: ->(context) { context.contract&.end_date&.strftime('%d/%m/%Y') },
-      monto_deposito: ->(context) { context.contract&.deposit || 0 },
-      monto_renta: ->(context) { context.contract&.rent_amount || context.property&.price }
+    contract: {
+      start_date: ->(context) { context.contract&.start_date&.strftime('%d/%m/%Y') },
+      end_date: ->(context) { context.contract&.end_date&.strftime('%d/%m/%Y') },
+      deposit_amount: ->(context) { context.contract&.deposit || 0 },
+      rent_amount: ->(context) { context.contract&.rent_amount || context.property&.price }
     },
-    propietario: {
-      nombre_completo: ->(context) { context.property&.company&.name },
-      nit: ->(context) { context.property&.company&.nit },
-      direccion: ->(context) { context.property&.company&.address }
+    owner: {
+      full_name: ->(context) { context.company&.name || context.property&.company&.name },
+      nit: ->(context) { context.company&.nit || context.property&.company&.nit },
+      address: ->(context) { context.company&.address || context.property&.company&.address }
     },
-    empresa: {
-      nombre: ->(context) { context.property&.company&.name },
-      nit: ->(context) { context.property&.company&.nit },
-      direccion: ->(context) { context.property&.company&.address }
+    company: {
+      name: ->(context) { context.company&.name || context.property&.company&.name },
+      nit: ->(context) { context.company&.nit || context.property&.company&.nit },
+      address: ->(context) { context.company&.address || context.property&.company&.address }
     }
   }.freeze
 end
 ```
 
 ### Sintaxis de Variables
-- Formato: `{{categoria.variable}}`
+- Formato: `{{category.variable}}`
 - Ejemplos:
-  - `{{inquilino.nombre_completo}}`
-  - `{{propiedad.direccion}}`
-  - `{{contrato.fecha_inicio}}`
-  - `{{propietario.nombre_completo}}`
+  - `{{tenant.full_name}}`
+  - `{{property.address}}`
+  - `{{contract.start_date}}`
+  - `{{owner.full_name}}`
+
+### Internacionalización (I18n)
+Las variables internas usan nombres en inglés para consistencia del código:
+- Las etiquetas mostradas al usuario se traducen usando I18n
+- Archivos de localización: `config/locales/en.yml` y `config/locales/es.yml`
+- Ejemplo de traducción:
+  - Variable interna: `{{tenant.full_name}}`
+  - Etiqueta en español: "Nombre Completo"
+  - Etiqueta en inglés: "Full Name"
 
 ### Agregar Nuevas Variables
 Para agregar una nueva variable:
@@ -181,20 +190,35 @@ Para agregar una nueva variable:
 1. Abrir `app/services/document_variable_resolver.rb`
 2. Agregar la variable a la categoría correspondiente:
 ```ruby
-inquilino: {
-  nombre_completo: ->(context) { context.occupant&.name },
-  cedula: ->(context) { context.occupant&.document_number },
+tenant: {
+  full_name: ->(context) { context.occupant&.name },
+  document_number: ->(context) { context.occupant&.document_number },
   email: ->(context) { context.occupant&.email },
-  telefono: ->(context) { context.occupant&.phone },
-  direccion: ->(context) { context.occupant&.address }  # Nueva variable
+  phone: ->(context) { context.occupant&.phone },
+  address: ->(context) { context.occupant&.address }  # Nueva variable
 }
 ```
 
-3. Actualizar el DocumentType correspondiente si es necesario:
+3. Actualizar los archivos de localización I18n (config/locales/en.yml y config/locales/es.yml):
+```yaml
+# es.yml
+es:
+  document_variables:
+    tenant:
+      address: "Dirección"
+
+# en.yml
+en:
+  document_variables:
+    tenant:
+      address: "Address"
+```
+
+4. Actualizar el DocumentType correspondiente si es necesario:
 ```ruby
 DocumentType.find_by(name: 'Contrato de Arrendamiento').update(
   variables: {
-    inquilino: ['nombre_completo', 'cedula', 'email', 'telefono', 'direccion']
+    tenant: ['full_name', 'document_number', 'email', 'phone', 'address']
   }
 )
 ```
@@ -246,11 +270,11 @@ tinymce.init({
 ```
 
 ### Variables Disponibles por Categoría
-- **Inquilino**: nombre_completo, cedula, email, telefono, direccion
-- **Propiedad**: direccion, area, precio_renta, tipo
-- **Contrato**: fecha_inicio, fecha_fin, monto_deposito, monto_renta
-- **Propietario**: nombre_completo, nit, direccion
-- **Empresa**: nombre, nit, direccion
+- **Tenant (Inquilino)**: full_name, document_number, email, phone
+- **Property (Propiedad)**: address, area, rent_price, type
+- **Contract (Contrato)**: start_date, end_date, deposit_amount, rent_amount
+- **Owner (Propietario)**: full_name, nit, address
+- **Company (Empresa)**: name, nit, address
 
 ## Acciones en Vista de Documentos
 

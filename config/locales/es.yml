@@ -1,0 +1,31 @@
+es:
+  hello: "Hola mundo"
+  document_variables:
+    tenant:
+      label: "Inquilino"
+      full_name: "Nombre Completo"
+      document_number: "Cédula"
+      email: "Email"
+      phone: "Teléfono"
+    property:
+      label: "Propiedad"
+      address: "Dirección"
+      area: "Área"
+      rent_price: "Precio Renta"
+      type: "Tipo"
+    contract:
+      label: "Contrato"
+      start_date: "Fecha Inicio"
+      end_date: "Fecha Fin"
+      deposit_amount: "Monto Depósito"
+      rent_amount: "Monto Renta"
+    owner:
+      label: "Propietario"
+      full_name: "Nombre Completo"
+      nit: "NIT"
+      address: "Dirección"
+    company:
+      label: "Empresa"
+      name: "Nombre"
+      nit: "NIT"
+      address: "Dirección"

@@ -1,32 +1,32 @@
 class DocumentVariableResolver
   VARIABLES = {
-    inquilino: {
-      nombre_completo: ->(context) { context.occupant&.name },
-      cedula: ->(context) { context.occupant&.document_number },
+    tenant: {
+      full_name: ->(context) { context.occupant&.name },
+      document_number: ->(context) { context.occupant&.document_number },
       email: ->(context) { context.occupant&.email },
-      telefono: ->(context) { context.occupant&.phone }
+      phone: ->(context) { context.occupant&.phone }
     },
-    propiedad: {
-      direccion: ->(context) { context.property&.address },
+    property: {
+      address: ->(context) { context.property&.address },
       area: ->(context) { context.property&.area },
-      precio_renta: ->(context) { context.property&.price },
-      tipo: ->(context) { context.property&.property_type }
+      rent_price: ->(context) { context.property&.price },
+      type: ->(context) { context.property&.property_type }
     },
-    contrato: {
-      fecha_inicio: ->(context) { context.contract&.start_date&.strftime("%d/%m/%Y") },
-      fecha_fin: ->(context) { context.contract&.end_date&.strftime("%d/%m/%Y") },
-      monto_deposito: ->(context) { context.contract&.deposit || 0 },
-      monto_renta: ->(context) { context.contract&.rent_amount || context.property&.price }
+    contract: {
+      start_date: ->(context) { context.contract&.start_date&.strftime("%d/%m/%Y") },
+      end_date: ->(context) { context.contract&.end_date&.strftime("%d/%m/%Y") },
+      deposit_amount: ->(context) { context.contract&.deposit || 0 },
+      rent_amount: ->(context) { context.contract&.rent_amount || context.property&.price }
     },
-    propietario: {
-      nombre_completo: ->(context) { context.company&.name || context.property&.company&.name },
+    owner: {
+      full_name: ->(context) { context.company&.name || context.property&.company&.name },
       nit: ->(context) { context.company&.nit || context.property&.company&.nit },
-      direccion: ->(context) { context.company&.address || context.property&.company&.address }
+      address: ->(context) { context.company&.address || context.property&.company&.address }
     },
-    empresa: {
-      nombre: ->(context) { context.company&.name || context.property&.company&.name },
+    company: {
+      name: ->(context) { context.company&.name || context.property&.company&.name },
       nit: ->(context) { context.company&.nit || context.property&.company&.nit },
-      direccion: ->(context) { context.company&.address || context.property&.company&.address }
+      address: ->(context) { context.company&.address || context.property&.company&.address }
     }
   }.freeze
 
