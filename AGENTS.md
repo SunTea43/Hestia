@@ -4,6 +4,8 @@
 
 **NO usar emojis** en respuestas, commits, comentarios de código o documentación generada. Mantener el código y comunicación profesional sin emojis.
 
+**Usar I18n.t en lugar de t** para todas las traducciones. Esto facilita la visualización de traducciones con extensiones de IDE. Ejemplo: `I18n.t("key")` en lugar de `t("key")`.
+
 ---
 
 ## 📋 Resumen Ejecutivo
