@@ -13,20 +13,20 @@ class DocumentVariableResolver
       tipo: ->(context) { context.property&.property_type }
     },
     contrato: {
-      fecha_inicio: ->(context) { context.contract&.start_date&.strftime('%d/%m/%Y') },
-      fecha_fin: ->(context) { context.contract&.end_date&.strftime('%d/%m/%Y') },
+      fecha_inicio: ->(context) { context.contract&.start_date&.strftime("%d/%m/%Y") },
+      fecha_fin: ->(context) { context.contract&.end_date&.strftime("%d/%m/%Y") },
       monto_deposito: ->(context) { context.contract&.deposit || 0 },
       monto_renta: ->(context) { context.contract&.rent_amount || context.property&.price }
     },
     propietario: {
-      nombre_completo: ->(context) { context.property&.company&.name },
-      nit: ->(context) { context.property&.company&.nit },
-      direccion: ->(context) { context.property&.company&.address }
+      nombre_completo: ->(context) { context.company&.name || context.property&.company&.name },
+      nit: ->(context) { context.company&.nit || context.property&.company&.nit },
+      direccion: ->(context) { context.company&.address || context.property&.company&.address }
     },
     empresa: {
-      nombre: ->(context) { context.property&.company&.name },
-      nit: ->(context) { context.property&.company&.nit },
-      direccion: ->(context) { context.property&.company&.address }
+      nombre: ->(context) { context.company&.name || context.property&.company&.name },
+      nit: ->(context) { context.company&.nit || context.property&.company&.nit },
+      direccion: ->(context) { context.company&.address || context.property&.company&.address }
     }
   }.freeze
 

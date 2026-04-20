@@ -26,7 +26,7 @@ class Document < ApplicationRecord
     context = DocumentContext.new(
       property: property,
       occupant: occupant,
-      contract: find_contract,
+      contract: nil,
       company: property&.company,
       document: self
     )
@@ -49,10 +49,6 @@ class Document < ApplicationRecord
   def resolve_variables
     return unless should_resolve_variables?
     self.body = interpolate_body
-  end
-
-  def find_contract
-    Contract.find_by(property_id: property_id, occupant_id: occupant_id)
   end
 
   def send_confirmation_email
