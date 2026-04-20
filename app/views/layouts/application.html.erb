@@ -144,6 +144,10 @@
                     <%= lucide_icon "file-text", size: 20 %>
                     Documentos
                   <% end %>
+                  <%= link_to document_templates_path, class: "nav-link-hestia #{'active' if controller_name == 'document_templates'}" do %>
+                    <%= lucide_icon "file-edit", size: 20 %>
+                    Plantillas de Documentos
+                  <% end %>
                   <%= link_to document_types_path, class: "nav-link-hestia #{'active' if controller_name == 'document_types'}" do %>
                     <%= lucide_icon "settings", size: 20 %>
                     Tipos de Documento

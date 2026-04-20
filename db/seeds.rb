@@ -36,7 +36,7 @@ puts "\nSwitching to ACME tenant schema..."
 Apartment::Tenant.switch!("acme")
 
 # Clean ACME tenant
-[ Charge, Contract, Occupant, Property, Company, CompanyManager, User ].each do |model|
+[ Charge, Document, Occupant, Property, Company, CompanyManager, User ].each do |model|
   begin
     model.destroy_all
   rescue => e
@@ -131,7 +131,7 @@ occupant2 = Occupant.create!(
 puts "Occupant: #{occupant2.name}"
 
 puts "\nCreating Contracts in ACME tenant..."
-contract1 = Contract.create!(
+contract1 = Document.create!(
   property_id: property1.id,
   occupant_id: occupant1.id,
   start_date: Date.today,
@@ -141,7 +141,7 @@ contract1 = Contract.create!(
 )
 puts "Contract: #{occupant1.name} → #{property1.address}"
 
-contract2 = Contract.create!(
+contract2 = Document.create!(
   property_id: property2.id,
   occupant_id: occupant2.id,
   start_date: Date.today,
@@ -151,7 +151,7 @@ contract2 = Contract.create!(
 )
 puts "Contract: #{occupant2.name} → #{property2.address}"
 
-contract3 = Contract.create!(
+contract3 = Document.create!(
   property_id: property1.id,
   occupant_id: occupant2.id,
   start_date: (Date.today + 2.months),
@@ -163,21 +163,21 @@ puts "Contract: #{occupant2.name} → Multiple contracts"
 
 puts "\nCreating Charges in ACME tenant..."
 Charge.create!(
-  contract_id: contract1.id,
+  document_id: contract1.id,
   amount: 1_500_000,
   charge_type: :rent,
   due_date: (Date.today + 1.month),
   status: :pending
 )
 Charge.create!(
-  contract_id: contract2.id,
+  document_id: contract2.id,
   amount: 3_500_000,
   charge_type: :rent,
   due_date: (Date.today + 5.days),
   status: :paid
 )
 Charge.create!(
-  contract_id: contract3.id,
+  document_id: contract3.id,
   amount: 1_500_000,
   charge_type: :rent,
   due_date: (Date.today + 3.months),
@@ -192,7 +192,7 @@ Apartment::Tenant.reset
 Apartment::Tenant.switch!("public")
 
 # Clean default tenant
-[ Charge, Contract, Occupant, Property, Company, CompanyManager, User ].each do |model|
+[ Charge, Document, Occupant, Property, Company, CompanyManager, User ].each do |model|
   begin
     model.destroy_all
   rescue => e
@@ -241,7 +241,7 @@ default_occupant = Occupant.create!(
 )
 puts "Occupant: #{default_occupant.name}"
 
-default_contract = Contract.create!(
+default_contract = Document.create!(
   property_id: default_property.id,
   occupant_id: default_occupant.id,
   start_date: Date.today,
@@ -308,6 +308,79 @@ document_types.each do |dt|
   puts "Document Type: #{dt[:name]}"
 end
 
+# ========== SEED DOCUMENT TEMPLATES (Shared across all tenants) ==========
+
+puts "\nCreating default document templates..."
+
+# Get document types
+contract_type = DocumentType.find_by(name: 'Contrato de Arrendamiento')
+cesion_type = DocumentType.find_by(name: 'Contrato de Cesión de Administración')
+
+# Create lease contract template with variables
+if contract_type
+  lease_template = DocumentTemplate.find_or_create_by(name: 'Contrato de Arrendamiento - Plantilla Base') do |template|
+    template.document_type = contract_type
+    template.description = 'Plantilla de contrato de arrendamiento con variables dinámicas'
+    template.body = <<-HTML
+<h1>CONTRATO DE ARRENDAMIENTO</h1>
+
+<p><strong>ENTRE:</strong></p>
+<p>El PROPIETARIO: {{owner.full_name}}, identificado con NIT {{owner.nit}}, con dirección en {{owner.address}}</p>
+<p>Y el INQUILINO: {{tenant.full_name}}, identificado con cédula {{tenant.document_number}}, correo electrónico {{tenant.email}}, teléfono {{tenant.phone}}</p>
+
+<p><strong>OBJETO DEL CONTRATO:</strong></p>
+<p>El propietario arrienda al inquilino el inmueble ubicado en {{property.address}}, con área de {{property.area}} m², tipo {{property.type}}.</p>
+
+<p><strong>VALOR DE LA RENTA:</strong></p>
+<p>El inquilino pagará mensualmente la suma de {{property.rent_price}}.</p>
+
+<p><strong>DURACIÓN:</strong></p>
+<p>El contrato tendrá vigencia desde {{contract.start_date}} hasta {{contract.end_date}}.</p>
+
+<p><strong>DEPÓSITO:</strong></p>
+<p>El inquilino entrega al propietario un depósito de {{contract.deposit_amount}}.</p>
+
+<p><strong>ADMINISTRACIÓN:</strong></p>
+<p>La propiedad será administrada por {{company.name}}, NIT {{company.nit}}, con dirección en {{company.address}}.</p>
+
+<p>_____________________________</p>
+<p>Firma Propietario</p>
+
+<p>_____________________________</p>
+<p>Firma Inquilino</p>
+    HTML
+  end
+  puts "Document Template: #{lease_template.name}"
+end
+
+# Create administration assignment template with variables
+if cesion_type
+  cession_template = DocumentTemplate.find_or_create_by(name: 'Contrato de Cesión de Administración - Plantilla Base') do |template|
+    template.document_type = cesion_type
+    template.description = 'Plantilla de contrato de cesión de administración con variables dinámicas'
+    template.body = <<-HTML
+<h1>CONTRATO DE CESIÓN DE ADMINISTRACIÓN</h1>
+
+<p><strong>ENTRE:</strong></p>
+<p>El PROPIETARIO: {{owner.full_name}}, identificado con NIT {{owner.nit}}, con dirección en {{owner.address}}</p>
+<p>Y la EMPRESA ADMINISTRADORA: {{company.name}}, NIT {{company.nit}}, con dirección en {{company.address}}</p>
+
+<p><strong>OBJETO:</strong></p>
+<p>El propietario cede a la empresa administradora la administración del inmueble ubicado en {{property.address}}, con área de {{property.area}} m², tipo {{property.type}}.</p>
+
+<p><strong>VALOR DE LA RENTA:</strong></p>
+<p>El inmueble tiene un valor de renta de {{property.rent_price}}.</p>
+
+<p>_____________________________</p>
+<p>Firma Propietario</p>
+
+<p>_____________________________</p>
+<p>Firma Empresa Administradora</p>
+    HTML
+  end
+  puts "Document Template: #{cession_template.name}"
+end
+
 # ========== SUMMARY ==========
 
 puts "\n" + "=" * 70
@@ -320,7 +393,7 @@ Apartment::Tenant.switch!("acme") do
   puts "  Companies: #{Company.count}"
   puts "  Properties: #{Property.count}"
   puts "  Occupants: #{Occupant.count}"
-  puts "  Contracts: #{Contract.count}"
+  puts "  Contracts: #{Document.count}"
   puts "  Charges: #{Charge.count}"
 end
 
@@ -330,7 +403,7 @@ Apartment::Tenant.switch!("public") do
   puts "  Companies: #{Company.count}"
   puts "  Properties: #{Property.count}"
   puts "  Occupants: #{Occupant.count}"
-  puts "  Contracts: #{Contract.count}"
+  puts "  Contracts: #{Document.count}"
   puts "  Charges: #{Charge.count}"
 end
 
