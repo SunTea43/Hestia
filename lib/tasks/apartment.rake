@@ -10,7 +10,7 @@ namespace :apartment do
         puts "Creating schema: #{tenant}"
         Apartment::Tenant.create(tenant)
       rescue Apartment::SchemaExists => e
-        puts "⚠️  #{e.message}"
+        puts "#{e.message}"
       end
     end
   end
@@ -21,7 +21,7 @@ namespace :apartment do
 
     tenants_to_migrate.each do |tenant|
       puts "\n" + "=" * 60
-      puts "🚀 Migrating tenant schema: #{tenant}"
+      puts "Migrating tenant schema: #{tenant}"
       puts "=" * 60
 
       begin
@@ -36,9 +36,9 @@ namespace :apartment do
           migration_context.up
         end
 
-        puts "✅ Migrations completed for #{tenant}"
+        puts "Migrations completed for #{tenant}"
       rescue => e
-        puts "❌ Error migrating #{tenant}: #{e.message}"
+        puts "Error migrating #{tenant}: #{e.message}"
       ensure
         Apartment::Tenant.reset
       end
@@ -58,7 +58,7 @@ namespace :apartment do
     admin_password = args[:admin_password] || ENV["ADMIN_PASSWORD"] || "password123"
 
     unless tenant_name.present?
-      puts "❌ Error: Por favor proporciona el nombre del tenant"
+      puts "Error: Por favor proporciona el nombre del tenant"
       puts "   Uso: rails apartment:create:tenant[tenant_name,admin_email,admin_password]"
       puts "   O:   TENANT_NAME=tenant_name ADMIN_EMAIL=admin@tenant.com rails apartment:create:tenant"
       exit 1
@@ -66,7 +66,7 @@ namespace :apartment do
 
     # Validate tenant name
     unless tenant_name.match?(/^[a-z0-9_]+$/)
-      puts "❌ El nombre del tenant debe contener solo letras minúsculas, números y guiones bajos"
+      puts "El nombre del tenant debe contener solo letras minúsculas, números y guiones bajos"
       exit 1
     end
 
@@ -80,25 +80,25 @@ namespace :apartment do
     end
 
     if schema_exists
-      puts "❌ El tenant '#{tenant_name}' ya existe"
+      puts "El tenant '#{tenant_name}' ya existe"
       exit 1
     end
 
-    puts "🏢 Creando nuevo tenant: #{tenant_name}"
+    puts "Creando nuevo tenant: #{tenant_name}"
     puts "   Email admin: #{admin_email}"
     puts ""
 
     # Step 1: Create schema
-    puts "1️⃣ Creando schema en PostgreSQL..."
+    puts "Creando schema en PostgreSQL..."
     begin
       Apartment::Tenant.create(tenant_name)
-      puts "✅ Schema creado"
+      puts "Schema creado"
     rescue Apartment::SchemaExists => e
-      puts "⚠️  #{e.message}"
+      puts "#{e.message}"
     end
 
     # Step 2: Run migrations
-    puts "2️⃣ Ejecutando migraciones..."
+    puts "Ejecutando migraciones..."
     begin
       Apartment::Tenant.switch!(tenant_name)
 
@@ -109,16 +109,16 @@ namespace :apartment do
         migration_context.up
       end
 
-      puts "✅ Migraciones completadas"
+      puts "Migraciones completadas"
     rescue => e
-      puts "❌ Error en migraciones: #{e.message}"
+      puts "Error en migraciones: #{e.message}"
       raise
     ensure
       Apartment::Tenant.reset
     end
 
     # Step 3: Create admin user
-    puts "3️⃣ Creando usuario administrador..."
+    puts "Creando usuario administrador..."
     begin
       Apartment::Tenant.switch!(tenant_name)
 
@@ -128,13 +128,13 @@ namespace :apartment do
         user.name = "Admin #{tenant_name.capitalize}"
         user.role = :admin
       end
-      puts "✅ Usuario creado: #{admin.email}"
+      puts "Usuario creado: #{admin.email}"
     ensure
       Apartment::Tenant.reset
     end
 
     # Step 4: Create default company
-    puts "4️⃣ Creando empresa por defecto..."
+    puts "Creando empresa por defecto..."
     begin
       Apartment::Tenant.switch!(tenant_name)
 
@@ -142,12 +142,12 @@ namespace :apartment do
         c.name = "#{tenant_name.capitalize} Corporation"
         c.address = "Tenant: #{tenant_name}"
       end
-      puts "✅ Empresa creada: #{company.name}"
+      puts "Empresa creada: #{company.name}"
 
       # Link admin to company
       admin = User.find_by(email: admin_email)
       CompanyManager.find_or_create_by(user: admin, company: company)
-      puts "✅ Admin vinculado a empresa"
+      puts "Admin vinculado a empresa"
     ensure
       Apartment::Tenant.reset
     end
@@ -155,19 +155,19 @@ namespace :apartment do
     # Success summary
     puts ""
     puts "=" * 70
-    puts "✅ Tenant '#{tenant_name}' creado exitosamente!"
+    puts "Tenant '#{tenant_name}' creado exitosamente!"
     puts "=" * 70
     puts ""
-    puts "📝 Información del Tenant:"
+    puts "Información del Tenant:"
     puts "   Nombre: #{tenant_name}"
     puts "   Schema: #{tenant_name}"
     puts "   Admin Email: #{admin_email}"
     puts "   Admin Password: #{admin_password}"
     puts ""
-    puts "🌐 Acceso local:"
+    puts "Acceso local:"
     puts "   http://#{tenant_name}.localhost:3000"
     puts ""
-    puts "⚠️  IMPORTANTE: Cambia la contraseña del admin en producción"
+    puts "IMPORTANTE: Cambia la contraseña del admin en producción"
     puts "=" * 70
   end
 end

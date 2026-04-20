@@ -18,21 +18,21 @@ tenants_to_seed = [ "acme", "public" ]  # "public" is the default schema in Post
 
 # ========== CREATE TENANT SCHEMAS ==========
 
-puts "\n1️⃣ Creating tenant schemas..."
+puts "\nCreating tenant schemas..."
 tenants_to_seed.each do |tenant_name|
   begin
     Apartment::Tenant.create(tenant_name)
-    puts "✅ Schema '#{tenant_name}' created"
+    puts "Schema '#{tenant_name}' created"
   rescue Apartment::SchemaExists => e
-    puts "⚠️  Schema already exists: #{tenant_name}"
+    puts "Schema already exists: #{tenant_name}"
   rescue => e
-    puts "❌ Error creating schema: #{e.message}"
+    puts "Error creating schema: #{e.message}"
   end
 end
 
 # ========== SEED ACME TENANT ==========
 
-puts "\n2️⃣ Switching to ACME tenant schema..."
+puts "\nSwitching to ACME tenant schema..."
 Apartment::Tenant.switch!("acme")
 
 # Clean ACME tenant
@@ -40,11 +40,11 @@ Apartment::Tenant.switch!("acme")
   begin
     model.destroy_all
   rescue => e
-    puts "  ⚠️  Could not clean #{model.table_name}"
+    puts "  Could not clean #{model.table_name}"
   end
 end
 
-puts "\n3️⃣ Creating Users in ACME tenant..."
+puts "\nCreating Users in ACME tenant..."
 acme_admin = User.create!(
   email: 'admin@acme.local',
   password: 'password123',
@@ -52,7 +52,7 @@ acme_admin = User.create!(
   name: 'Admin ACME',
   role: :admin
 )
-puts "✅ ACME Admin: #{acme_admin.email}"
+puts "ACME Admin: #{acme_admin.email}"
 
 acme_gestor = User.create!(
   email: 'gestor@acme.local',
@@ -61,30 +61,30 @@ acme_gestor = User.create!(
   name: 'Juan Gestor ACME',
   role: :gestor
 )
-puts "✅ ACME Gestor: #{acme_gestor.email}"
+puts "ACME Gestor: #{acme_gestor.email}"
 
-puts "\n4️⃣ Creating Companies in ACME tenant..."
+puts "\nCreating Companies in ACME tenant..."
 acme_residential = Company.create!(
   name: 'ACME Residencial',
   nit: '900.123.456-1',
   address: 'Calle 123 # 45-67'
 )
-puts "✅ Company: #{acme_residential.name}"
+puts "Company: #{acme_residential.name}"
 
 acme_commercial = Company.create!(
   name: 'ACME Comercial',
   nit: '900.123.456-2',
   address: 'Calle 456 # 78-90'
 )
-puts "✅ Company: #{acme_commercial.name}"
+puts "Company: #{acme_commercial.name}"
 
 # Link users to companies (CompanyManager association)
 CompanyManager.create!(user: acme_admin, company: acme_residential)
 CompanyManager.create!(user: acme_admin, company: acme_commercial)
 CompanyManager.create!(user: acme_gestor, company: acme_residential)
-puts "✅ Users linked to companies"
+puts "Users linked to companies"
 
-puts "\n5️⃣ Creating Properties in ACME tenant..."
+puts "\nCreating Properties in ACME tenant..."
 property1 = Property.create!(
   company_id: acme_residential.id,
   address: 'Calle Falsa 123, Apartamento 501',
@@ -97,7 +97,7 @@ property1 = Property.create!(
   admin_fee_included: true,
   description: 'Hermoso apartamento con vista'
 )
-puts "✅ Property: #{property1.address}"
+puts "Property: #{property1.address}"
 
 property2 = Property.create!(
   company_id: acme_commercial.id,
@@ -111,16 +111,16 @@ property2 = Property.create!(
   admin_fee_included: false,
   description: 'Oficina premium en centro de negocios'
 )
-puts "✅ Property: #{property2.address}"
+puts "Property: #{property2.address}"
 
-puts "\n6️⃣ Creating Occupants in ACME tenant..."
+puts "\nCreating Occupants in ACME tenant..."
 occupant1 = Occupant.create!(
   name: 'María García López',
   email: 'maria.garcia@email.com',
   phone: '+57 301 234 5678',
   document_number: '1023456789'
 )
-puts "✅ Occupant: #{occupant1.name}"
+puts "Occupant: #{occupant1.name}"
 
 occupant2 = Occupant.create!(
   name: 'Javier López (multi-property renter)',
@@ -128,9 +128,9 @@ occupant2 = Occupant.create!(
   phone: '+57 303 456 7890',
   document_number: '1111111111'
 )
-puts "✅ Occupant: #{occupant2.name}"
+puts "Occupant: #{occupant2.name}"
 
-puts "\n7️⃣ Creating Contracts in ACME tenant..."
+puts "\nCreating Contracts in ACME tenant..."
 contract1 = Contract.create!(
   property_id: property1.id,
   occupant_id: occupant1.id,
@@ -139,7 +139,7 @@ contract1 = Contract.create!(
   tenant_income: 5_000_000,
   co_debtor_info: 'Pedro García (padre), Ingresos: 4M'
 )
-puts "✅ Contract: #{occupant1.name} → #{property1.address}"
+puts "Contract: #{occupant1.name} → #{property1.address}"
 
 contract2 = Contract.create!(
   property_id: property2.id,
@@ -149,7 +149,7 @@ contract2 = Contract.create!(
   tenant_income: 8_000_000,
   co_debtor_info: 'Sin codeudor'
 )
-puts "✅ Contract: #{occupant2.name} → #{property2.address}"
+puts "Contract: #{occupant2.name} → #{property2.address}"
 
 contract3 = Contract.create!(
   property_id: property1.id,
@@ -159,9 +159,9 @@ contract3 = Contract.create!(
   tenant_income: 8_000_000,
   co_debtor_info: 'Sin codeudor'
 )
-puts "✅ Contract: #{occupant2.name} → Multiple contracts"
+puts "Contract: #{occupant2.name} → Multiple contracts"
 
-puts "\n8️⃣ Creating Charges in ACME tenant..."
+puts "\nCreating Charges in ACME tenant..."
 Charge.create!(
   contract_id: contract1.id,
   amount: 1_500_000,
@@ -183,11 +183,11 @@ Charge.create!(
   due_date: (Date.today + 3.months),
   status: :pending
 )
-puts "✅ Charges created"
+puts "Charges created"
 
 # ========== SEED DEFAULT TENANT ==========
 
-puts "\n9️⃣ Switching to DEFAULT tenant schema..."
+puts "\nSwitching to DEFAULT tenant schema..."
 Apartment::Tenant.reset
 Apartment::Tenant.switch!("public")
 
@@ -196,11 +196,11 @@ Apartment::Tenant.switch!("public")
   begin
     model.destroy_all
   rescue => e
-    puts "  ⚠️  Could not clean #{model.table_name}"
+    puts "  Could not clean #{model.table_name}"
   end
 end
 
-puts "\n🔟 Creating data for DEFAULT tenant..."
+puts "\nCreating data for DEFAULT tenant..."
 default_admin = User.create!(
   email: 'admin@default.local',
   password: 'password123',
@@ -208,14 +208,14 @@ default_admin = User.create!(
   name: 'Admin Default',
   role: :admin
 )
-puts "✅ Default Admin: #{default_admin.email}"
+puts "Default Admin: #{default_admin.email}"
 
 default_company = Company.create!(
   name: 'Default Properties',
   nit: '800.999.888-7',
   address: 'Calle Default 999'
 )
-puts "✅ Company: #{default_company.name}"
+puts "Company: #{default_company.name}"
 
 CompanyManager.create!(user: default_admin, company: default_company)
 
@@ -231,7 +231,7 @@ default_property = Property.create!(
   admin_fee_included: true,
   description: 'Casa moderna con terraza'
 )
-puts "✅ Property: #{default_property.address}"
+puts "Property: #{default_property.address}"
 
 default_occupant = Occupant.create!(
   name: 'Carlos Mendoza',
@@ -239,7 +239,7 @@ default_occupant = Occupant.create!(
   phone: '+57 312 345 6789',
   document_number: '1234567890'
 )
-puts "✅ Occupant: #{default_occupant.name}"
+puts "Occupant: #{default_occupant.name}"
 
 default_contract = Contract.create!(
   property_id: default_property.id,
@@ -249,17 +249,17 @@ default_contract = Contract.create!(
   tenant_income: 6_000_000,
   co_debtor_info: 'Sin codeudor'
 )
-puts "✅ Contract created"
+puts "Contract created"
 
 # ========== RESET TO PUBLIC SCHEMA ==========
 
-puts "\n1️⃣1️⃣ Resetting to public schema..."
+puts "\nResetting to public schema..."
 Apartment::Tenant.reset
-puts "✅ Back to public schema"
+puts "Back to public schema"
 
 # ========== SEED DOCUMENT TYPES (Shared across all tenants) ==========
 
-puts "\n1️⃣2️⃣ Creating default document types..."
+puts "\nCreating default document types..."
 document_types = [
   {
     name: 'Certificado de Tradición y Libertad',
@@ -299,16 +299,16 @@ document_types.each do |dt|
     type.icon = dt[:icon]
     type.color = dt[:color]
   end
-  puts "✅ Document Type: #{dt[:name]}"
+  puts "Document Type: #{dt[:name]}"
 end
 
 # ========== SUMMARY ==========
 
 puts "\n" + "=" * 70
-puts "✅ Seeds completed successfully!"
+puts "Seeds completed successfully!"
 puts "=" * 70
 
-puts "\n🏢 Tenant: acme"
+puts "\nTenant: acme"
 Apartment::Tenant.switch!("acme") do
   puts "  Users: #{User.count}"
   puts "  Companies: #{Company.count}"
@@ -318,7 +318,7 @@ Apartment::Tenant.switch!("acme") do
   puts "  Charges: #{Charge.count}"
 end
 
-puts "\n🏢 Tenant: default"
+puts "\nTenant: default"
 Apartment::Tenant.switch!("public") do
   puts "  Users: #{User.count}"
   puts "  Companies: #{Company.count}"
