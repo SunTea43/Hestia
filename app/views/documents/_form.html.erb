@@ -1,5 +1,5 @@
 <div class="card border-0 shadow-sm rounded-4 p-4" data-controller="document">
-  <%= form_with(model: document, data: { document_target: "form" }) do |form| %>
+  <%= form_with(model: document) do |form| %>
     <% if document.errors.any? %>
       <div class="alert alert-danger rounded-3 border-0">
         <h6 class="fw-bold"><%= pluralize(document.errors.count, "error") %> impidieron guardar:</h6>
@@ -19,17 +19,18 @@
 
       <div class="col-md-6">
         <%= form.label :property_id, "Inmueble", class: "form-label fw-bold" %>
-        <%= form.collection_select :property_id, Property.all, :id, :address, { prompt: "Seleccionar inmueble..." }, { class: "form-select rounded-3", data: { document_target: "propertySelect", action: "change->document#propertyChanged" } } %>
+        <%= form.collection_select :property_id, Property.all, :id, :address, { prompt: "Seleccionar inmueble..." }, { class: "form-select rounded-3" } %>
       </div>
 
       <div class="col-md-6">
         <%= form.label :occupant_id, "Inquilino / Ocupante", class: "form-label fw-bold" %>
-        <%= form.collection_select :occupant_id, Occupant.all, :id, :name, { prompt: "Seleccionar inquilino..." }, { class: "form-select rounded-3", data: { document_target: "occupantSelect", action: "change->document#occupantChanged" } } %>
+        <%= form.collection_select :occupant_id, Occupant.all, :id, :name, { prompt: "Seleccionar inquilino..." }, { class: "form-select rounded-3" } %>
       </div>
 
       <div class="col-md-6">
         <%= form.label :document_template_id, "Plantilla (Opcional)", class: "form-label fw-bold" %>
-        <%= form.collection_select :document_template_id, DocumentTemplate.all, :id, :name, { prompt: "Seleccionar plantilla..." }, { class: "form-select rounded-3", data: { document_target: "templateSelect", action: "change->document#loadTemplate" } } %>
+        <%= form.collection_select :document_template_id, DocumentTemplate.includes(:document_type).order(:name), :id, :name, { prompt: "Seleccionar plantilla..." }, { class: "form-select rounded-3", data: { document_target: "templateSelect", action: "change->document#toggleFields" } } %>
+        <div class="form-text" data-document-target="templateDetails">Si seleccionas una plantilla HTML, el documento se renderizará desde esa plantilla con los datos del inmueble y del inquilino.</div>
       </div>
 
       <div class="col-md-6">
@@ -52,7 +53,7 @@
         <%= form.select :status, [['Borrador', 'draft'], ['Publicado', 'published'], ['Firmado', 'signed'], ['Vencido', 'expired']], {}, { class: "form-select rounded-3" } %>
       </div>
 
-      <div class="col-12">
+      <div class="col-12" id="file-field">
         <%= form.label :file, "Archivo Adjunto (PDF, DOCX, Imagen)", class: "form-label fw-bold" %>
         <%= form.file_field :file, class: "form-control rounded-3", accept: "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*" %>
         <% if document.file.attached? %>
@@ -60,11 +61,6 @@
             <small class="text-muted">Archivo actual: <%= link_to document.file.filename, url_for(document.file), target: "_blank", class: "text-decoration-none" %></small>
           </div>
         <% end %>
-      </div>
-
-      <div class="col-12">
-        <%= form.label :body, "Contenido del Documento", class: "form-label fw-bold" %>
-        <%= form.text_area :body, class: "tinymce rounded-3", rows: 15, placeholder: "Contenido legal o descripción detallada...", data: { document_target: "bodyField" } %>
       </div>
 
       <div class="col-12 mt-4">
@@ -76,21 +72,3 @@
     </div>
   <% end %>
 </div>
-
-<script>
-  tinymce.init({
-    selector: '.tinymce',
-    height: 400,
-    menubar: true,
-    plugins: [
-      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-      'anchor', 'searchreplace', 'visualblocks', 'fullscreen',
-      'insertdatetime', 'media', 'table', 'help', 'wordcount'
-    ],
-    toolbar: 'undo redo | blocks | ' +
-      'bold italic backcolor | alignleft aligncenter ' +
-      'alignright alignjustify | bullist numlist outdent indent | ' +
-      'removeformat | help',
-    content_style: 'body { font-family:Inter,sans-serif; font-size:14px }'
-  });
-</script>

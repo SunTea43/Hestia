@@ -130,9 +130,17 @@
               <div class="fw-bold small"><%= document.name || 'Sin título' %></div>
               <small class="text-muted"><%= document.occupant.name %></small>
             </div>
-            <%= link_to document_path(document), class: "btn btn-sm btn-outline-primary rounded-2 p-1" do %>
-              <%= lucide_icon "eye", size: 14 %>
-            <% end %>
+            <div class="d-flex gap-1">
+              <%= link_to document_path(document), class: "btn btn-sm btn-outline-primary rounded-2 p-1", title: "Visualizar" do %>
+                <%= lucide_icon "eye", size: 14 %>
+              <% end %>
+              <%= link_to sign_document_path(document), class: "btn btn-sm btn-outline-success rounded-2 p-1", title: "Firmar" do %>
+                <%= lucide_icon "pen-tool", size: 14 %>
+              <% end %>
+              <%= button_to document_path(document), method: :delete, data: { confirm: "¿Estás seguro de eliminar este documento?" }, class: "btn btn-sm btn-outline-danger rounded-2 p-1", title: "Eliminar" do %>
+                <%= lucide_icon "trash-2", size: 14 %>
+              <% end %>
+            </div>
           </div>
         <% end %>
         

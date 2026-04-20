@@ -5,15 +5,18 @@ one:
   description: Contrato de arrendamiento
   icon: file-text
   color: "#D4AF37"
+  template_type: html
 
 two:
   name: Recibo
   description: Recibo de pago
   icon: receipt
   color: "#28a745"
+  template_type: attachment
 
 contract:
   name: Contrato de Arrendamiento
   description: Contrato de arrendamiento
   icon: file-text
   color: "#D4AF37"
+  template_type: html

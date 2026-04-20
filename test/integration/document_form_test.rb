@@ -29,7 +29,7 @@ class DocumentFormTest < ActionDispatch::IntegrationTest
       document_number: "#{SecureRandom.hex(4)}"
     )
 
-    @doc_type = DocumentType.create!(name: "Contrato", icon: "file-text", color: "#000000")
+    @doc_type = DocumentType.create!(name: "Contrato #{SecureRandom.hex(4)}", icon: "file-text", color: "#000000", template_type: "attachment")
   end
 
   test "link_to_vincular_inquilino should navigate to new document form" do

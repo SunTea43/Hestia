@@ -1,10 +1,149 @@
-<p style="color: green"><%= notice %></p>
+<div class="d-flex justify-content-between align-items-center mb-4 pt-3">
+  <div>
+    <h1 class="fw-bold mb-0 text-dark"><%= @document.name.presence || "Documento ##{@document.id}" %></h1>
+    <p class="text-muted mb-0">Vista del documento generado para el inmueble y ocupante seleccionados</p>
+  </div>
 
-<%= render @document %>
+  <div class="d-flex gap-2">
+    <% if @document.generated_pdf_attached? %>
+      <%= link_to download_pdf_document_path(@document), class: "btn btn-outline-dark d-flex align-items-center gap-2 px-4 py-2 rounded-3 shadow-sm" do %>
+        <%= lucide_icon "file-down", size: 18 %>
+        Descargar PDF
+      <% end %>
+    <% end %>
 
-<div>
-  <%= link_to "Edit this document", edit_document_path(@document) %> |
-  <%= link_to "Back to documents", documents_path %>
+    <% if @document.html_template? && @document.rendered_body.present? %>
+      <%= button_to regenerate_pdf_document_path(@document), method: :post, class: "btn btn-outline-primary d-flex align-items-center gap-2 px-4 py-2 rounded-3 shadow-sm", form_class: "d-inline-block" do %>
+        <%= lucide_icon "refresh-cw", size: 18 %>
+        <%= @document.generated_pdf_attached? ? "Regenerar PDF" : "Generar PDF" %>
+      <% end %>
+    <% end %>
 
-  <%= button_to "Destroy this document", @document, method: :delete %>
+    <% if @document.file.attached? %>
+      <%= link_to download_document_path(@document), class: "btn btn-outline-secondary d-flex align-items-center gap-2 px-4 py-2 rounded-3 shadow-sm" do %>
+        <%= lucide_icon "download", size: 18 %>
+        <%= @document.generated_pdf_attached? ? "Descargar adjunto" : "Descargar archivo" %>
+      <% end %>
+    <% end %>
+
+    <%= link_to edit_document_path(@document), class: "btn btn-hestia d-flex align-items-center gap-2 px-4 py-2 rounded-3 shadow-sm" do %>
+      <%= lucide_icon "edit-3", size: 18 %>
+      Editar
+    <% end %>
+
+    <%= link_to documents_path, class: "btn btn-outline-secondary d-flex align-items-center gap-2 px-4 py-2 rounded-3 shadow-sm" do %>
+      <%= lucide_icon "arrow-left", size: 18 %>
+      Volver
+    <% end %>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm rounded-4 p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h5 class="fw-bold mb-1">Contenido renderizado</h5>
+          <p class="text-muted mb-0 small">Este HTML es la base que luego puede convertirse en PDF.</p>
+        </div>
+        <% if @document.html_template? %>
+          <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">Plantilla HTML</span>
+        <% elsif @document.file.attached? %>
+          <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3 py-2">Documento adjunto</span>
+        <% end %>
+      </div>
+
+      <% if @document.html_template? && @document.rendered_body.present? %>
+        <div class="bg-white border rounded-4 p-4" style="min-height: 540px;">
+          <%= sanitize(
+            @document.rendered_body,
+            tags: %w[h1 h2 h3 h4 h5 h6 p br strong em u ul ol li table thead tbody tr th td blockquote span div],
+            attributes: %w[class style colspan rowspan]
+          ) %>
+        </div>
+      <% elsif @document.file.attached? %>
+        <div class="border rounded-4 p-4 bg-light">
+          <p class="mb-3">Este documento usa un archivo adjunto como fuente final.</p>
+          <%= link_to "Abrir archivo", url_for(@document.file), target: "_blank", rel: "noopener", class: "btn btn-hestia rounded-3 px-4 py-2" %>
+        </div>
+      <% else %>
+        <div class="alert alert-warning rounded-4 border-0 mb-0">
+          Este documento aún no tiene una plantilla HTML renderizable ni un archivo adjunto.
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+      <h5 class="fw-bold mb-3">Información</h5>
+
+      <div class="mb-3">
+        <small class="text-muted fw-bold">Plantilla</small>
+        <div class="text-dark"><%= @document.document_template&.name || "Sin plantilla" %></div>
+      </div>
+
+      <div class="mb-3">
+        <small class="text-muted fw-bold">Inmueble</small>
+        <div class="text-dark"><%= @document.property.address %></div>
+      </div>
+
+      <div class="mb-3">
+        <small class="text-muted fw-bold">Inquilino / Ocupante</small>
+        <div class="text-dark"><%= @document.occupant.name %></div>
+      </div>
+
+      <div class="mb-3">
+        <small class="text-muted fw-bold">Estado</small>
+        <div class="text-dark text-capitalize"><%= @document.status.presence || "draft" %></div>
+      </div>
+
+      <div class="mb-3">
+        <small class="text-muted fw-bold">Origen del adjunto</small>
+        <div class="text-dark">
+          <% if @document.generated_pdf_attached? %>
+            PDF generado desde plantilla
+          <% elsif @document.manual_attachment? %>
+            Archivo cargado manualmente
+          <% elsif @document.file.attached? %>
+            Archivo adjunto
+          <% else %>
+            Sin archivo adjunto
+          <% end %>
+        </div>
+      </div>
+
+      <% if @document.generated_pdf_attached? && @document.generated_pdf_at.present? %>
+        <div class="mb-3">
+          <small class="text-muted fw-bold">PDF generado</small>
+          <div class="text-dark"><%= l(Time.zone.parse(@document.generated_pdf_at)) %></div>
+        </div>
+      <% elsif @document.manual_attachment? && @document.manual_attachment_at.present? %>
+        <div class="mb-3">
+          <small class="text-muted fw-bold">Archivo cargado</small>
+          <div class="text-dark"><%= l(Time.zone.parse(@document.manual_attachment_at)) %></div>
+        </div>
+      <% end %>
+
+      <div class="mb-3">
+        <small class="text-muted fw-bold">Fecha de emisión</small>
+        <div class="text-dark"><%= l(@document.start_date) %></div>
+      </div>
+
+      <% if @document.end_date.present? %>
+        <div class="mb-3">
+          <small class="text-muted fw-bold">Fecha de vencimiento</small>
+          <div class="text-dark"><%= l(@document.end_date) %></div>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @document.document_template&.body.present? %>
+      <div class="card border-0 shadow-sm rounded-4 p-4">
+        <h5 class="fw-bold mb-3">Fuente de la plantilla</h5>
+        <p class="text-muted small mb-3">El HTML editable vive en la plantilla y se completa con variables cuando abres este documento.</p>
+        <%= link_to "Ver plantilla", document_template_path(@document.document_template), class: "btn btn-outline-secondary rounded-3 px-4 py-2" %>
+      </div>
+    <% end %>
+  </div>
 </div>

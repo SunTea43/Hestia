@@ -18,6 +18,15 @@
       </div>
 
       <div class="col-md-6">
+        <%= form.label :template_type, "Modo del Documento", class: "form-label fw-bold" %>
+        <%= form.select :template_type,
+            [["HTML generado desde plantilla", "html"], ["Adjunto cargado manualmente", "attachment"]],
+            { prompt: "Seleccionar modo..." },
+            { class: "form-select rounded-3" } %>
+        <div class="form-text">Usa HTML para plantillas renderizadas y PDF, o Adjunto para archivos subidos manualmente.</div>
+      </div>
+
+      <div class="col-md-6">
         <%= form.label :icon, "Icono (Lucide)", class: "form-label fw-bold" %>
         <%= form.text_field :icon, class: "form-control rounded-3", placeholder: "Ej: file-text, receipt, shield..." %>
         <small class="text-muted">Usa nombres de <a href="https://lucide.dev/icons" target="_blank">Lucide Icons</a>.</small>

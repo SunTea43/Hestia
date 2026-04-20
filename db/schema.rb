@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_13_022213) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_20_012111) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -88,7 +88,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_022213) do
     t.text "description"
     t.string "icon"
     t.string "name"
+    t.string "template_type", default: "html", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "variables"
+    t.index ["template_type"], name: "index_document_types_on_template_type"
   end
 
   create_table "documents", force: :cascade do |t|

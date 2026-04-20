@@ -1,42 +1,24 @@
 <div id="<%= dom_id document %>">
-  <div>
-    <strong>Property:</strong>
-    <%= document.property_id %>
-  </div>
+  <div class="card border-0 shadow-sm rounded-4 p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="fw-bold mb-1"><%= document.name.presence || "Documento ##{document.id}" %></h5>
+        <p class="text-muted small mb-0"><%= document.document_template&.name || "Sin plantilla" %></p>
+      </div>
+      <span class="badge bg-light text-dark rounded-pill px-3 py-2 text-capitalize"><%= document.status.presence || "draft" %></span>
+    </div>
 
-  <div>
-    <strong>Occupant:</strong>
-    <%= document.occupant_id %>
-  </div>
+    <div class="small text-muted mb-2">Inmueble: <%= document.property.address %></div>
+    <div class="small text-muted mb-3">Ocupante: <%= document.occupant.name %></div>
 
-  <div>
-    <strong>Name:</strong>
-    <%= document.name %>
+    <% if document.html_template? && document.rendered_body.present? %>
+      <div class="border rounded-4 p-3 bg-white">
+        <%= sanitize(document.rendered_body) %>
+      </div>
+    <% elsif document.file.attached? %>
+      <div class="border rounded-4 p-3 bg-light">
+        <%= link_to document.file.filename.to_s, url_for(document.file), target: "_blank", rel: "noopener" %>
+      </div>
+    <% end %>
   </div>
-
-  <div>
-    <strong>Body:</strong>
-    <%= document.body %>
-  </div>
-
-  <div>
-    <strong>Status:</strong>
-    <%= document.status %>
-  </div>
-
-  <div>
-    <strong>Start date:</strong>
-    <%= document.start_date %>
-  </div>
-
-  <div>
-    <strong>End date:</strong>
-    <%= document.end_date %>
-  </div>
-
-  <div>
-    <strong>Metadata:</strong>
-    <%= document.metadata %>
-  </div>
-
 </div>

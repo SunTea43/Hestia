@@ -29,3 +29,32 @@
 
 en:
   hello: "Hello world"
+  document_variables:
+    tenant:
+      label: "Tenant"
+      full_name: "Full Name"
+      document_number: "Document Number"
+      email: "Email"
+      phone: "Phone"
+    property:
+      label: "Property"
+      address: "Address"
+      area: "Area"
+      rent_price: "Rent Price"
+      type: "Type"
+    contract:
+      label: "Contract"
+      start_date: "Start Date"
+      end_date: "End Date"
+      deposit_amount: "Deposit Amount"
+      rent_amount: "Rent Amount"
+    owner:
+      label: "Owner"
+      full_name: "Full Name"
+      nit: "NIT"
+      address: "Address"
+    company:
+      label: "Company"
+      name: "Name"
+      nit: "NIT"
+      address: "Address"

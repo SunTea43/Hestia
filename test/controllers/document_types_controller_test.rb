@@ -22,7 +22,15 @@ class DocumentTypesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create document_type" do
     assert_difference("DocumentType.count") do
-      post document_types_url, params: { document_type: { color: @document_type.color, description: @document_type.description, icon: @document_type.icon, name: @document_type.name } }
+      post document_types_url, params: {
+        document_type: {
+          color: @document_type.color,
+          description: @document_type.description,
+          icon: @document_type.icon,
+          name: "#{@document_type.name} nuevo",
+          template_type: "html"
+        }
+      }
     end
 
     assert_redirected_to document_type_url(DocumentType.last)
@@ -39,12 +47,20 @@ class DocumentTypesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update document_type" do
-    patch document_type_url(@document_type), params: { document_type: { color: @document_type.color, description: @document_type.description, icon: @document_type.icon, name: @document_type.name } }
+    patch document_type_url(@document_type), params: {
+      document_type: {
+        color: @document_type.color,
+        description: @document_type.description,
+        icon: @document_type.icon,
+        name: @document_type.name,
+        template_type: @document_type.template_type
+      }
+    }
     assert_redirected_to document_type_url(@document_type)
   end
 
   test "should destroy document_type" do
-    new_type = DocumentType.create!(name: "ToDelete", icon: "trash", color: "#000000")
+    new_type = DocumentType.create!(name: "ToDelete", icon: "trash", color: "#000000", template_type: "attachment")
     assert_difference("DocumentType.count", -1) do
       delete document_type_url(new_type)
     end

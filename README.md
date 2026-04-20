@@ -26,6 +26,7 @@ Hestia aims to digitalize the real estate cycle: from property listing and tenan
 - **Styling**: Bootstrap with CSS Bundling (Dart Sass)
 - **Icons**: Lucide Rails
 - **Background Jobs/Cache**: Solid Queue / Solid Cache / Solid Cable
+- **PDF Rendering**: Wicked PDF + wkhtmltopdf
 
 ## ⚙️ Getting Started
 
@@ -34,6 +35,7 @@ Hestia aims to digitalize the real estate cycle: from property listing and tenan
 - Ruby 3.4.1+
 - PostgreSQL
 - Node.js & npm/yarn
+- wkhtmltopdf
 
 ### Installation
 
@@ -49,6 +51,12 @@ Hestia aims to digitalize the real estate cycle: from property listing and tenan
     ```bash
     bundle install
     npm install
+    ```
+
+    On macOS, install wkhtmltopdf before exporting document templates as PDF:
+
+    ```bash
+    brew install --cask wkhtmltopdf
     ```
 
 3. **Setup Database**:
@@ -85,3 +93,13 @@ rails test:system
 
 ---
 Developed with ❤️ and Antigravity for the Hestia Project.
+
+## PDF Documents
+
+HTML document templates can be exported as PDF from the document detail screen.
+
+- The editable source stays in `DocumentTemplate`.
+- Variables such as `{{propietario.nombre_completo}}` and `{{inquilino.nombre_completo}}` are resolved when the document is rendered.
+- The resulting HTML is converted to PDF through Wicked PDF.
+
+If the `wkhtmltopdf` binary is not on your PATH, define `WKHTMLTOPDF_PATH` in the environment.

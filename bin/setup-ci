@@ -4,13 +4,13 @@
 # Este script se ejecuta ANTES de bundle install en el pipeline
 # Desactiva frozen mode temporalmente para actualizar Gemfile.lock
 
-echo "🔓 Desactivando frozen mode para CI/CD..."
+echo "Desactivando frozen mode para CI/CD..."
 bundle config set frozen false
 
-echo "📦 Instalando dependencias..."
+echo "Instalando dependencias..."
 bundle install
 
-echo "🔒 Re-activando frozen mode..."
+echo "Re-activando frozen mode..."
 bundle config set frozen true
 
-echo "✅ Listo para ejecutar tests y linting"
+echo "Listo para ejecutar tests y linting"

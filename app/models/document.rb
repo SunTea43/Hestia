@@ -10,60 +10,98 @@ class Document < ApplicationRecord
   has_one_attached :file
 
   # For backward compatibility with previous 'Contract' model fields
-  store_accessor :metadata, :tenant_income, :co_debtor_info
+  store_accessor :metadata, :tenant_income, :co_debtor_info, :attachment_origin, :generated_pdf_at, :manual_attachment_at
 
   validates :start_date, presence: true
 
   scope :root, -> { where(parent_id: nil) }
 
-  before_validation :copy_template_content, if: :document_template_id_changed?
   after_create :send_confirmation_email
 
-  def interpolate_body
-    return body unless body
+  def html_template?
+    document_template&.html_template?
+  end
 
-    interpolated = body.dup
+  def attachment_template?
+    document_template&.attachment_template?
+  end
 
-    # Property variables
-    if property
-      interpolated = interpolated.gsub(/\{\{property\.address\}\}/, property.address.to_s)
-      interpolated = interpolated.gsub(/\{\{property\.area\}\}/, property.area.to_s)
-      interpolated = interpolated.gsub(/\{\{property\.price\}\}/, property.price.to_s)
-      interpolated = interpolated.gsub(/\{\{property\.property_type\}\}/, property.property_type.to_s)
-      interpolated = interpolated.gsub(/\{\{property\.description\}\}/, property.description.to_s)
-      interpolated = interpolated.gsub(/\{\{property\.common_areas\}\}/, property.common_areas.to_s)
+  def rendered_body
+    source_body = if html_template? && document_template&.body.present?
+      document_template.body
+    else
+      body
     end
 
-    # Occupant variables
-    if occupant
-      interpolated = interpolated.gsub(/\{\{occupant\.name\}\}/, occupant.name.to_s)
-      interpolated = interpolated.gsub(/\{\{occupant\.email\}\}/, occupant.email.to_s)
-      interpolated = interpolated.gsub(/\{\{occupant\.phone\}\}/, occupant.phone.to_s)
-      interpolated = interpolated.gsub(/\{\{occupant\.document_number\}\}/, occupant.document_number.to_s)
-    end
+    return source_body unless source_body.present?
 
-    # Document metadata variables
-    if metadata
-      interpolated = interpolated.gsub(/\{\{document\.tenant_income\}\}/, metadata["tenant_income"].to_s)
-      interpolated = interpolated.gsub(/\{\{document\.co_debtor_info\}\}/, metadata["co_debtor_info"].to_s)
-    end
+    DocumentVariableResolver.new(document_context).resolve(source_body)
+  end
 
-    # Date variables
-    if start_date
-      interpolated = interpolated.gsub(/\{\{document\.start_date\}\}/, start_date.strftime("%d/%m/%Y"))
-    end
-    if end_date
-      interpolated = interpolated.gsub(/\{\{document\.end_date\}\}/, end_date.strftime("%d/%m/%Y"))
-    end
+  def display_name
+    name.presence || document_template&.name || "Documento #{id}"
+  end
 
-    interpolated
+  def generated_pdf_attached?
+    file.attached? && attachment_origin == "generated_pdf"
+  end
+
+  def manual_attachment?
+    file.attached? && attachment_origin == "manual_upload"
+  end
+
+  def pdf_filename
+    base_name = display_name
+    "#{base_name.parameterize}.pdf"
+  end
+
+  def attach_generated_pdf!(pdf_binary)
+    file.purge if file.attached?
+
+    file.attach(
+      io: StringIO.new(pdf_binary),
+      filename: pdf_filename,
+      content_type: "application/pdf"
+    )
+
+    update_attachment_metadata!(
+      attachment_origin: "generated_pdf",
+      generated_pdf_at: Time.current.iso8601,
+      manual_attachment_at: nil
+    )
+  end
+
+  def mark_manual_attachment!
+    return unless file.attached?
+
+    update_attachment_metadata!(
+      attachment_origin: "manual_upload",
+      manual_attachment_at: Time.current.iso8601,
+      generated_pdf_at: nil
+    )
   end
 
   private
 
-  def copy_template_content
-    return unless document_template && body.blank?
-    self.body = document_template.body
+  def update_attachment_metadata!(attributes)
+    updated_metadata = (metadata || {}).merge(attributes.stringify_keys)
+
+    if persisted?
+      update_columns(metadata: updated_metadata, updated_at: Time.current)
+      self.metadata = updated_metadata
+    else
+      self.metadata = updated_metadata
+    end
+  end
+
+  def document_context
+    DocumentContext.new(
+      property: property,
+      occupant: occupant,
+      contract: nil,
+      company: property&.company,
+      document: self
+    )
   end
 
   def send_confirmation_email

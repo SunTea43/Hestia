@@ -1,4 +1,57 @@
-<div class="card border-0 shadow-sm rounded-4 p-4">
+<%
+  variable_groups = [
+    {
+      title: I18n.t("document_variables.tenant.label"),
+      icon: "user",
+      items: [
+        { label: I18n.t("document_variables.tenant.full_name"), token: "{{inquilino.nombre_completo}}", alias_token: "{{tenant.full_name}}" },
+        { label: I18n.t("document_variables.tenant.document_number"), token: "{{inquilino.cedula}}", alias_token: "{{tenant.document_number}}" },
+        { label: I18n.t("document_variables.tenant.email"), token: "{{inquilino.email}}", alias_token: "{{tenant.email}}" },
+        { label: I18n.t("document_variables.tenant.phone"), token: "{{inquilino.telefono}}", alias_token: "{{tenant.phone}}" }
+      ]
+    },
+    {
+      title: I18n.t("document_variables.property.label"),
+      icon: "home",
+      items: [
+        { label: I18n.t("document_variables.property.address"), token: "{{propiedad.direccion}}", alias_token: "{{property.address}}" },
+        { label: I18n.t("document_variables.property.area"), token: "{{propiedad.area}}", alias_token: "{{property.area}}" },
+        { label: I18n.t("document_variables.property.rent_price"), token: "{{propiedad.precio_renta}}", alias_token: "{{property.rent_price}}" },
+        { label: I18n.t("document_variables.property.type"), token: "{{propiedad.tipo}}", alias_token: "{{property.type}}" }
+      ]
+    },
+    {
+      title: I18n.t("document_variables.contract.label"),
+      icon: "file-text",
+      items: [
+        { label: I18n.t("document_variables.contract.start_date"), token: "{{contrato.fecha_inicio}}", alias_token: "{{contract.start_date}}" },
+        { label: I18n.t("document_variables.contract.end_date"), token: "{{contrato.fecha_fin}}", alias_token: "{{contract.end_date}}" },
+        { label: I18n.t("document_variables.contract.deposit_amount"), token: "{{contrato.monto_deposito}}", alias_token: "{{contract.deposit_amount}}" },
+        { label: I18n.t("document_variables.contract.rent_amount"), token: "{{contrato.monto_renta}}", alias_token: "{{contract.rent_amount}}" }
+      ]
+    },
+    {
+      title: I18n.t("document_variables.owner.label"),
+      icon: "users",
+      items: [
+        { label: I18n.t("document_variables.owner.full_name"), token: "{{propietario.nombre_completo}}", alias_token: "{{owner.full_name}}" },
+        { label: I18n.t("document_variables.owner.nit"), token: "{{propietario.nit}}", alias_token: "{{owner.nit}}" },
+        { label: I18n.t("document_variables.owner.address"), token: "{{propietario.direccion}}", alias_token: "{{owner.address}}" }
+      ]
+    },
+    {
+      title: I18n.t("document_variables.company.label"),
+      icon: "building-2",
+      items: [
+        { label: I18n.t("document_variables.company.name"), token: "{{empresa.nombre}}", alias_token: "{{company.name}}" },
+        { label: I18n.t("document_variables.company.nit"), token: "{{empresa.nit}}", alias_token: "{{company.nit}}" },
+        { label: I18n.t("document_variables.company.address"), token: "{{empresa.direccion}}", alias_token: "{{company.address}}" }
+      ]
+    }
+  ]
+%>
+
+<div class="card border-0 shadow-sm rounded-4 p-4 p-lg-5">
   <%= form_with(model: document_template) do |form| %>
     <% if document_template.errors.any? %>
       <div class="alert alert-danger rounded-3 border-0">
@@ -18,6 +71,12 @@
       </div>
 
       <div class="col-md-6">
+        <%= form.label :document_type_id, "Tipo de Plantilla", class: "form-label fw-bold" %>
+        <%= form.collection_select :document_type_id, DocumentType.order(:name), :id, :name, { prompt: "Seleccionar tipo..." }, { class: "form-select rounded-3" } %>
+        <div class="form-text">Si es HTML, este contenido será la fuente del documento y se completará con variables al visualizarlo.</div>
+      </div>
+
+      <div class="col-md-6">
         <%= form.label :parent_id, "Carpeta Padre (Opcional)", class: "form-label fw-bold" %>
         <%= form.collection_select :parent_id, DocumentTemplate.root, :id, :name, { prompt: "Sin carpeta padre (raíz)" }, { class: "form-select rounded-3" } %>
       </div>
@@ -28,8 +87,15 @@
       </div>
 
       <div class="col-12">
-        <%= form.label :body, "Contenido de la Plantilla", class: "form-label fw-bold" %>
-        <%= form.text_area :body, class: "tinymce rounded-3", rows: 15, placeholder: "Escribe el contenido de la plantilla aquí..." %>
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2 mb-2">
+          <%= form.label :body, "Contenido de la Plantilla", class: "form-label fw-bold mb-0" %>
+          <button type="button" class="btn btn-outline-secondary rounded-3 px-3 py-2 d-inline-flex align-items-center gap-2 align-self-start align-self-lg-auto" data-bs-toggle="modal" data-bs-target="#document-template-variables-modal">
+            <%= lucide_icon "list-tree", size: 18 %>
+            Ver variables disponibles
+          </button>
+        </div>
+        <%= form.text_area :body, class: "tinymce form-control rounded-3 w-100", rows: 22, style: "min-height: 34rem;", placeholder: "Escribe el contenido de la plantilla aquí..." %>
+        <div class="form-text">Ejemplo: Contrato de {{propietario.nombre_completo}} quien será el mandante y {{inquilino.nombre_completo}} quien será el inquilino.</div>
       </div>
 
       <div class="col-12 mt-4">
@@ -42,10 +108,63 @@
   <% end %>
 </div>
 
+<div class="modal fade" id="document-template-variables-modal" tabindex="-1" aria-labelledby="document-template-variables-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-xl modal-fullscreen-md-down">
+    <div class="modal-content border-0 rounded-4 shadow">
+      <div class="modal-header border-0 pb-0 px-4 pt-4">
+        <div>
+          <h5 class="modal-title fw-bold" id="document-template-variables-modal-label">Variables disponibles para la plantilla</h5>
+          <p class="text-muted mb-0 small">Usa preferiblemente los tokens en espanol. Los aliases en ingles siguen funcionando por compatibilidad.</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body px-4 pb-4">
+        <div class="alert alert-light border rounded-4 small mb-4">
+          Puedes copiar una variable o insertarla directamente en el editor. Si TinyMCE no esta activo, se agregara al final del campo de contenido.
+        </div>
+
+        <div class="row g-3">
+          <% variable_groups.each do |group| %>
+            <div class="col-12 col-lg-6">
+              <div class="card h-100 border-0 bg-light rounded-4 shadow-sm">
+                <div class="card-body p-4">
+                  <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="rounded-3 p-2 bg-white border">
+                      <%= lucide_icon group[:icon], size: 18, class: "text-dark" %>
+                    </div>
+                    <h6 class="fw-bold mb-0"><%= group[:title] %></h6>
+                  </div>
+
+                  <div class="d-flex flex-column gap-3">
+                    <% group[:items].each do |item| %>
+                      <div class="bg-white rounded-4 border p-3">
+                        <div class="fw-semibold mb-2"><%= item[:label] %></div>
+                        <div class="small text-muted mb-2">Recomendado</div>
+                        <div class="font-monospace small bg-light rounded-3 p-2 border mb-2"><%= item[:token] %></div>
+                        <div class="small text-muted mb-2">Alias compatible</div>
+                        <div class="font-monospace small bg-light rounded-3 p-2 border mb-3"><%= item[:alias_token] %></div>
+                        <div class="d-flex flex-wrap gap-2">
+                          <button type="button" class="btn btn-hestia btn-sm rounded-3" onclick="insertTemplateVariable('<%= j(item[:token]) %>')">Insertar</button>
+                          <button type="button" class="btn btn-outline-secondary btn-sm rounded-3" onclick="copyTemplateVariable('<%= j(item[:token]) %>')">Copiar</button>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   tinymce.init({
     selector: '.tinymce',
-    height: 400,
+    height: 560,
     menubar: true,
     plugins: [
       'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
@@ -55,7 +174,165 @@
     toolbar: 'undo redo | blocks | ' +
       'bold italic backcolor | alignleft aligncenter ' +
       'alignright alignjustify | bullist numlist outdent indent | ' +
+      'insertTenant insertProperty insertContract insertOwner insertCompany | ' +
       'removeformat | help',
+    setup: function(editor) {
+      const translations = {
+        tenant: {
+          label: '<%= j(I18n.t("document_variables.tenant.label")) %>',
+          full_name: '<%= j(I18n.t("document_variables.tenant.full_name")) %>',
+          document_number: '<%= j(I18n.t("document_variables.tenant.document_number")) %>',
+          email: '<%= j(I18n.t("document_variables.tenant.email")) %>',
+          phone: '<%= j(I18n.t("document_variables.tenant.phone")) %>'
+        },
+        property: {
+          label: '<%= j(I18n.t("document_variables.property.label")) %>',
+          address: '<%= j(I18n.t("document_variables.property.address")) %>',
+          area: '<%= j(I18n.t("document_variables.property.area")) %>',
+          rent_price: '<%= j(I18n.t("document_variables.property.rent_price")) %>',
+          type: '<%= j(I18n.t("document_variables.property.type")) %>'
+        },
+        contract: {
+          label: '<%= j(I18n.t("document_variables.contract.label")) %>',
+          start_date: '<%= j(I18n.t("document_variables.contract.start_date")) %>',
+          end_date: '<%= j(I18n.t("document_variables.contract.end_date")) %>',
+          deposit_amount: '<%= j(I18n.t("document_variables.contract.deposit_amount")) %>',
+          rent_amount: '<%= j(I18n.t("document_variables.contract.rent_amount")) %>'
+        },
+        owner: {
+          label: '<%= j(I18n.t("document_variables.owner.label")) %>',
+          full_name: '<%= j(I18n.t("document_variables.owner.full_name")) %>',
+          nit: '<%= j(I18n.t("document_variables.owner.nit")) %>',
+          address: '<%= j(I18n.t("document_variables.owner.address")) %>'
+        },
+        company: {
+          label: '<%= j(I18n.t("document_variables.company.label")) %>',
+          name: '<%= j(I18n.t("document_variables.company.name")) %>',
+          nit: '<%= j(I18n.t("document_variables.company.nit")) %>',
+          address: '<%= j(I18n.t("document_variables.company.address")) %>'
+        }
+      };
+
+      editor.ui.registry.addButton('insertTenant', {
+        text: translations.tenant.label,
+        icon: 'user',
+        onAction: function() {
+          const menu = [
+            { text: translations.tenant.full_name, value: '{{inquilino.nombre_completo}}' },
+            { text: translations.tenant.document_number, value: '{{inquilino.cedula}}' },
+            { text: translations.tenant.email, value: '{{inquilino.email}}' },
+            { text: translations.tenant.phone, value: '{{inquilino.telefono}}' }
+          ];
+          showVariableMenu(editor, menu);
+        }
+      });
+
+      editor.ui.registry.addButton('insertProperty', {
+        text: translations.property.label,
+        icon: 'home',
+        onAction: function() {
+          const menu = [
+            { text: translations.property.address, value: '{{propiedad.direccion}}' },
+            { text: translations.property.area, value: '{{propiedad.area}}' },
+            { text: translations.property.rent_price, value: '{{propiedad.precio_renta}}' },
+            { text: translations.property.type, value: '{{propiedad.tipo}}' }
+          ];
+          showVariableMenu(editor, menu);
+        }
+      });
+
+      editor.ui.registry.addButton('insertContract', {
+        text: translations.contract.label,
+        icon: 'file',
+        onAction: function() {
+          const menu = [
+            { text: translations.contract.start_date, value: '{{contrato.fecha_inicio}}' },
+            { text: translations.contract.end_date, value: '{{contrato.fecha_fin}}' },
+            { text: translations.contract.deposit_amount, value: '{{contrato.monto_deposito}}' },
+            { text: translations.contract.rent_amount, value: '{{contrato.monto_renta}}' }
+          ];
+          showVariableMenu(editor, menu);
+        }
+      });
+
+      editor.ui.registry.addButton('insertOwner', {
+        text: translations.owner.label,
+        icon: 'users',
+        onAction: function() {
+          const menu = [
+            { text: translations.owner.full_name, value: '{{propietario.nombre_completo}}' },
+            { text: translations.owner.nit, value: '{{propietario.nit}}' },
+            { text: translations.owner.address, value: '{{propietario.direccion}}' }
+          ];
+          showVariableMenu(editor, menu);
+        }
+      });
+
+      editor.ui.registry.addButton('insertCompany', {
+        text: translations.company.label,
+        icon: 'building',
+        onAction: function() {
+          const menu = [
+            { text: translations.company.name, value: '{{empresa.nombre}}' },
+            { text: translations.company.nit, value: '{{empresa.nit}}' },
+            { text: translations.company.address, value: '{{empresa.direccion}}' }
+          ];
+          showVariableMenu(editor, menu);
+        }
+      });
+    },
     content_style: 'body { font-family:Inter,sans-serif; font-size:14px }'
   });
+
+  function showVariableMenu(editor, menu) {
+    editor.windowManager.open({
+      title: 'Seleccionar Variable',
+      body: {
+        type: 'panel',
+        items: menu.map(item => ({
+          type: 'button',
+          text: item.text,
+          name: item.value,
+          onclick: function() {
+            editor.insertContent(item.value);
+            editor.windowManager.close();
+          }
+        }))
+      },
+      buttons: [
+        {
+          text: 'Cerrar',
+          type: 'cancel',
+          onclick: 'close'
+        }
+      ]
+    });
+  }
+
+  function insertTemplateVariable(token) {
+    const activeEditor = window.tinymce?.activeEditor
+
+    if (activeEditor && !activeEditor.destroyed) {
+      activeEditor.focus()
+      activeEditor.insertContent(token)
+      return
+    }
+
+    const textarea = document.querySelector('.tinymce')
+    if (!textarea) return
+
+    const currentValue = textarea.value || ''
+    const separator = currentValue && !currentValue.endsWith(' ') ? ' ' : ''
+    textarea.value = `${currentValue}${separator}${token}`
+    textarea.focus()
+  }
+
+  function copyTemplateVariable(token) {
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(token)
+      return
+    }
+
+    insertTemplateVariable(token)
+  }
 </script>

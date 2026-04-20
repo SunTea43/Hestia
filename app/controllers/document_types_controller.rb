@@ -73,6 +73,6 @@ class DocumentTypesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def document_type_params
-      params.expect(document_type: [ :name, :description, :icon, :color ])
+      params.expect(document_type: [ :name, :description, :icon, :color, :template_type ])
     end
 end
