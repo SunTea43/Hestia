@@ -5,6 +5,28 @@ updates:
   schedule:
     interval: weekly
   open-pull-requests-limit: 10
+  groups:
+    ruby-patch-and-minor:
+      update-types:
+        - "minor"
+        - "patch"
+  ignore:
+    - dependency-name: "puma"
+      update-types:
+        - "version-update:semver-major"
+    - dependency-name: "tinymce-rails"
+      update-types:
+        - "version-update:semver-major"
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  groups:
+    node-patch-and-minor:
+      update-types:
+        - "minor"
+        - "patch"
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
