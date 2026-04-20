@@ -55,7 +55,102 @@
     toolbar: 'undo redo | blocks | ' +
       'bold italic backcolor | alignleft aligncenter ' +
       'alignright alignjustify | bullist numlist outdent indent | ' +
+      'insertInquilino insertPropiedad insertContrato insertPropietario insertEmpresa | ' +
       'removeformat | help',
+    setup: function(editor) {
+      editor.ui.registry.addButton('insertInquilino', {
+        text: 'Inquilino',
+        icon: 'user',
+        onAction: function() {
+          const menu = [
+            { text: 'Nombre Completo', value: '{{inquilino.nombre_completo}}' },
+            { text: 'Cédula', value: '{{inquilino.cedula}}' },
+            { text: 'Email', value: '{{inquilino.email}}' },
+            { text: 'Teléfono', value: '{{inquilino.telefono}}' }
+          ];
+          showVariableMenu(editor, menu);
+        }
+      });
+
+      editor.ui.registry.addButton('insertPropiedad', {
+        text: 'Propiedad',
+        icon: 'home',
+        onAction: function() {
+          const menu = [
+            { text: 'Dirección', value: '{{propiedad.direccion}}' },
+            { text: 'Área', value: '{{propiedad.area}}' },
+            { text: 'Precio Renta', value: '{{propiedad.precio_renta}}' },
+            { text: 'Tipo', value: '{{propiedad.tipo}}' }
+          ];
+          showVariableMenu(editor, menu);
+        }
+      });
+
+      editor.ui.registry.addButton('insertContrato', {
+        text: 'Contrato',
+        icon: 'file',
+        onAction: function() {
+          const menu = [
+            { text: 'Fecha Inicio', value: '{{contrato.fecha_inicio}}' },
+            { text: 'Fecha Fin', value: '{{contrato.fecha_fin}}' },
+            { text: 'Monto Depósito', value: '{{contrato.monto_deposito}}' },
+            { text: 'Monto Renta', value: '{{contrato.monto_renta}}' }
+          ];
+          showVariableMenu(editor, menu);
+        }
+      });
+
+      editor.ui.registry.addButton('insertPropietario', {
+        text: 'Propietario',
+        icon: 'users',
+        onAction: function() {
+          const menu = [
+            { text: 'Nombre Completo', value: '{{propietario.nombre_completo}}' },
+            { text: 'NIT', value: '{{propietario.nit}}' },
+            { text: 'Dirección', value: '{{propietario.direccion}}' }
+          ];
+          showVariableMenu(editor, menu);
+        }
+      });
+
+      editor.ui.registry.addButton('insertEmpresa', {
+        text: 'Empresa',
+        icon: 'building',
+        onAction: function() {
+          const menu = [
+            { text: 'Nombre', value: '{{empresa.nombre}}' },
+            { text: 'NIT', value: '{{empresa.nit}}' },
+            { text: 'Dirección', value: '{{empresa.direccion}}' }
+          ];
+          showVariableMenu(editor, menu);
+        }
+      });
+    },
     content_style: 'body { font-family:Inter,sans-serif; font-size:14px }'
   });
+
+  function showVariableMenu(editor, menu) {
+    editor.windowManager.open({
+      title: 'Seleccionar Variable',
+      body: {
+        type: 'panel',
+        items: menu.map(item => ({
+          type: 'button',
+          text: item.text,
+          name: item.value,
+          onclick: function() {
+            editor.insertContent(item.value);
+            editor.windowManager.close();
+          }
+        }))
+      },
+      buttons: [
+        {
+          text: 'Cerrar',
+          type: 'cancel',
+          onclick: 'close'
+        }
+      ]
+    });
+  }
 </script>
