@@ -69,6 +69,6 @@ class DocumentTemplatesController < ApplicationController
   end
 
   def document_template_params
-    params.expect(document_template: [ :name, :description, :body, :parent_id ])
+    params.expect(document_template: [ :name, :description, :body, :parent_id, :document_type_id ])
   end
 end

@@ -18,6 +18,12 @@
       </div>
 
       <div class="col-md-6">
+        <%= form.label :document_type_id, "Tipo de Plantilla", class: "form-label fw-bold" %>
+        <%= form.collection_select :document_type_id, DocumentType.order(:name), :id, :name, { prompt: "Seleccionar tipo..." }, { class: "form-select rounded-3" } %>
+        <div class="form-text">Si es HTML, este contenido será la fuente del documento y se completará con variables al visualizarlo.</div>
+      </div>
+
+      <div class="col-md-6">
         <%= form.label :parent_id, "Carpeta Padre (Opcional)", class: "form-label fw-bold" %>
         <%= form.collection_select :parent_id, DocumentTemplate.root, :id, :name, { prompt: "Sin carpeta padre (raíz)" }, { class: "form-select rounded-3" } %>
       </div>
@@ -30,6 +36,7 @@
       <div class="col-12">
         <%= form.label :body, "Contenido de la Plantilla", class: "form-label fw-bold" %>
         <%= form.text_area :body, class: "tinymce rounded-3", rows: 15, placeholder: "Escribe el contenido de la plantilla aquí..." %>
+        <div class="form-text">Ejemplo: Contrato de {{propietario.nombre_completo}} quien será el mandante y {{inquilino.nombre_completo}} quien será el inquilino.</div>
       </div>
 
       <div class="col-12 mt-4">
@@ -99,10 +106,10 @@
         icon: 'user',
         onAction: function() {
           const menu = [
-            { text: translations.tenant.full_name, value: '{{tenant.full_name}}' },
-            { text: translations.tenant.document_number, value: '{{tenant.document_number}}' },
-            { text: translations.tenant.email, value: '{{tenant.email}}' },
-            { text: translations.tenant.phone, value: '{{tenant.phone}}' }
+            { text: translations.tenant.full_name, value: '{{inquilino.nombre_completo}}' },
+            { text: translations.tenant.document_number, value: '{{inquilino.cedula}}' },
+            { text: translations.tenant.email, value: '{{inquilino.email}}' },
+            { text: translations.tenant.phone, value: '{{inquilino.telefono}}' }
           ];
           showVariableMenu(editor, menu);
         }
@@ -113,10 +120,10 @@
         icon: 'home',
         onAction: function() {
           const menu = [
-            { text: translations.property.address, value: '{{property.address}}' },
-            { text: translations.property.area, value: '{{property.area}}' },
-            { text: translations.property.rent_price, value: '{{property.rent_price}}' },
-            { text: translations.property.type, value: '{{property.type}}' }
+            { text: translations.property.address, value: '{{propiedad.direccion}}' },
+            { text: translations.property.area, value: '{{propiedad.area}}' },
+            { text: translations.property.rent_price, value: '{{propiedad.precio_renta}}' },
+            { text: translations.property.type, value: '{{propiedad.tipo}}' }
           ];
           showVariableMenu(editor, menu);
         }
@@ -127,10 +134,10 @@
         icon: 'file',
         onAction: function() {
           const menu = [
-            { text: translations.contract.start_date, value: '{{contract.start_date}}' },
-            { text: translations.contract.end_date, value: '{{contract.end_date}}' },
-            { text: translations.contract.deposit_amount, value: '{{contract.deposit_amount}}' },
-            { text: translations.contract.rent_amount, value: '{{contract.rent_amount}}' }
+            { text: translations.contract.start_date, value: '{{contrato.fecha_inicio}}' },
+            { text: translations.contract.end_date, value: '{{contrato.fecha_fin}}' },
+            { text: translations.contract.deposit_amount, value: '{{contrato.monto_deposito}}' },
+            { text: translations.contract.rent_amount, value: '{{contrato.monto_renta}}' }
           ];
           showVariableMenu(editor, menu);
         }
@@ -141,9 +148,9 @@
         icon: 'users',
         onAction: function() {
           const menu = [
-            { text: translations.owner.full_name, value: '{{owner.full_name}}' },
-            { text: translations.owner.nit, value: '{{owner.nit}}' },
-            { text: translations.owner.address, value: '{{owner.address}}' }
+            { text: translations.owner.full_name, value: '{{propietario.nombre_completo}}' },
+            { text: translations.owner.nit, value: '{{propietario.nit}}' },
+            { text: translations.owner.address, value: '{{propietario.direccion}}' }
           ];
           showVariableMenu(editor, menu);
         }
@@ -154,9 +161,9 @@
         icon: 'building',
         onAction: function() {
           const menu = [
-            { text: translations.company.name, value: '{{company.name}}' },
-            { text: translations.company.nit, value: '{{company.nit}}' },
-            { text: translations.company.address, value: '{{company.address}}' }
+            { text: translations.company.name, value: '{{empresa.nombre}}' },
+            { text: translations.company.nit, value: '{{empresa.nit}}' },
+            { text: translations.company.address, value: '{{empresa.direccion}}' }
           ];
           showVariableMenu(editor, menu);
         }

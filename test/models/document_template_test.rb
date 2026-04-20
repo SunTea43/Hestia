@@ -181,4 +181,32 @@ class DocumentTemplateTest < ActiveSupport::TestCase
     assert json["document_type"]
     assert_equal @html_type.id, json["document_type"]["id"]
   end
+
+  test "should render body for document using its context" do
+    @template.body = "Contrato de {{propietario.nombre_completo}} con {{inquilino.nombre_completo}}"
+    @template.save!
+
+    property = Property.create!(
+      company: companies(:acme_residential),
+      address: "Calle Test 123",
+      area: 100.0,
+      property_type: "Apartamento",
+      category: :rent,
+      price: 1_500_000
+    )
+    occupant = Occupant.create!(
+      name: "Pepito Perez",
+      email: "test@example.com",
+      phone: "+57 300 123 4567",
+      document_number: "1234567890"
+    )
+    document = Document.create!(
+      property: property,
+      occupant: occupant,
+      start_date: Date.today,
+      document_template: @template
+    )
+
+    assert_equal "Contrato de ACME Residencial con Pepito Perez", @template.rendered_body_for(document)
+  end
 end

@@ -19,17 +19,21 @@ class DocumentTemplatesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create document_template" do
+    document_type = DocumentType.create!(name: "Contrato HTML", template_type: "html")
+
     assert_difference "DocumentTemplate.count", 1 do
       post document_templates_url, params: {
         document_template: {
           name: "New Template",
           description: "Test description",
-          body: "<p>Test body</p>"
+          body: "<p>Test body</p>",
+          document_type_id: document_type.id
         }
       }
     end
 
     assert_redirected_to document_template_path(DocumentTemplate.last)
+    assert_equal document_type, DocumentTemplate.last.document_type
   end
 
   test "should show document_template" do
@@ -43,15 +47,19 @@ class DocumentTemplatesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update document_template" do
+    document_type = DocumentType.create!(name: "Adjunto", template_type: "attachment")
+
     patch document_template_url(@template), params: {
       document_template: {
-        name: "Updated Name"
+        name: "Updated Name",
+        document_type_id: document_type.id
       }
     }
 
     assert_redirected_to document_template_path(@template)
     @template.reload
     assert_equal "Updated Name", @template.name
+    assert_equal document_type, @template.document_type
   end
 
   test "should destroy document_template" do

@@ -70,4 +70,22 @@ class DocumentVariableResolverTest < ActiveSupport::TestCase
 
     assert_equal template, result
   end
+
+  test "should resolve spanish aliases" do
+    company = Company.new(name: "Inmobiliaria Acme", nit: "123", address: "Calle 1")
+    property = Property.new(address: "Calle 2", area: 80, price: 2_000_000, property_type: "Casa", company: company)
+    occupant = Occupant.new(name: "Pepito Perez", email: "pepito@example.com", phone: "3000000000", document_number: "999")
+    context = DocumentContext.new(
+      property: property,
+      occupant: occupant,
+      contract: nil,
+      company: company,
+      document: nil
+    )
+
+    resolver = DocumentVariableResolver.new(context)
+    template = "Contrato de {{propietario.nombre_completo}} quien será el mandante y {{inquilino.nombre_completo}} quien será el inquilino"
+
+    assert_equal "Contrato de Inmobiliaria Acme quien será el mandante y Pepito Perez quien será el inquilino", resolver.resolve(template)
+  end
 end

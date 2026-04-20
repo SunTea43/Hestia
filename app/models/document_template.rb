@@ -19,6 +19,20 @@ class DocumentTemplate < ApplicationRecord
     document_type&.attachment_template?
   end
 
+  def rendered_body_for(document)
+    return body unless body.present? && document.present?
+
+    context = DocumentContext.new(
+      property: document.property,
+      occupant: document.occupant,
+      contract: nil,
+      company: document.property&.company,
+      document: document
+    )
+
+    DocumentVariableResolver.new(context).resolve(body)
+  end
+
   def as_json(options = {})
     super(options.merge(include: :document_type))
   end
