@@ -19,6 +19,10 @@ class DocumentTemplate < ApplicationRecord
     document_type&.attachment_template?
   end
 
+  def as_json(options = {})
+    super(options.merge(include: :document_type))
+  end
+
   private
 
   def requires_body?

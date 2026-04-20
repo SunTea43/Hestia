@@ -17,6 +17,35 @@ export default class extends Controller {
       })
   }
 
+  toggleFields(event) {
+    const templateId = event.target.value
+    const fileField = document.getElementById('file-field')
+    const bodyField = document.getElementById('body-field')
+
+    if (!templateId) {
+      fileField.classList.remove('d-none')
+      bodyField.classList.remove('d-none')
+      return
+    }
+
+    fetch(`/document_templates/${templateId}.json`)
+      .then(response => response.json())
+      .then(data => {
+        const templateType = data.document_type?.template_type || 'html'
+
+        if (templateType === 'html') {
+          fileField.classList.add('d-none')
+          bodyField.classList.remove('d-none')
+        } else if (templateType === 'attachment') {
+          fileField.classList.remove('d-none')
+          bodyField.classList.add('d-none')
+        } else {
+          fileField.classList.remove('d-none')
+          bodyField.classList.remove('d-none')
+        }
+      })
+  }
+
   interpolateVariables() {
     let body = this.bodyFieldTarget.value
 

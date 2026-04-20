@@ -29,7 +29,7 @@
 
       <div class="col-md-6">
         <%= form.label :document_template_id, "Plantilla (Opcional)", class: "form-label fw-bold" %>
-        <%= form.collection_select :document_template_id, DocumentTemplate.all, :id, :name, { prompt: "Seleccionar plantilla..." }, { class: "form-select rounded-3", data: { document_target: "templateSelect", action: "change->document#loadTemplate" } } %>
+        <%= form.collection_select :document_template_id, DocumentTemplate.all, :id, :name, { prompt: "Seleccionar plantilla..." }, { class: "form-select rounded-3", data: { document_target: "templateSelect", action: "change->document#loadTemplate change->document#toggleFields" } } %>
       </div>
 
       <div class="col-md-6">
@@ -52,7 +52,7 @@
         <%= form.select :status, [['Borrador', 'draft'], ['Publicado', 'published'], ['Firmado', 'signed'], ['Vencido', 'expired']], {}, { class: "form-select rounded-3" } %>
       </div>
 
-      <div class="col-12">
+      <div class="col-12" id="file-field">
         <%= form.label :file, "Archivo Adjunto (PDF, DOCX, Imagen)", class: "form-label fw-bold" %>
         <%= form.file_field :file, class: "form-control rounded-3", accept: "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*" %>
         <% if document.file.attached? %>
@@ -62,7 +62,7 @@
         <% end %>
       </div>
 
-      <div class="col-12">
+      <div class="col-12" id="body-field">
         <%= form.label :body, "Contenido del Documento", class: "form-label fw-bold" %>
         <%= form.text_area :body, class: "tinymce rounded-3", rows: 15, placeholder: "Contenido legal o descripción detallada...", data: { document_target: "bodyField" } %>
       </div>
