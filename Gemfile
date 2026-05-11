@@ -72,7 +72,7 @@ group :test do
 end
 
 # Devise authentication
-gem "devise", "~> 5.0.3"
+gem "devise", "~> 5.0.4"
 
 # Authorization with Pundit RBAC
 gem "pundit", "~> 2.5"
