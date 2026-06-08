@@ -369,7 +369,7 @@ GEM
     thruster (0.1.21-x86_64-darwin)
     thruster (0.1.21-x86_64-linux)
     timeout (0.6.1)
-    tinymce-rails (5.10.9)
+    tinymce-rails (8.6.0)
       railties (>= 3.1.1)
     tsort (0.2.0)
     turbo-rails (2.0.23)
@@ -439,7 +439,7 @@ DEPENDENCIES
   solid_queue
   stimulus-rails
   thruster
-  tinymce-rails (~> 5.0)
+  tinymce-rails (~> 8.6)
   turbo-rails
   tzinfo-data
   web-console
