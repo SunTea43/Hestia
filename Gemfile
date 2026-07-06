@@ -81,7 +81,7 @@ gem "pundit", "~> 2.5"
 gem "lucide-rails", "~> 0.7.3"
 
 # WYSIWYG Editor for document editing
-gem "tinymce-rails", "~> 5.0"
+gem "tinymce-rails", "~> 8.7"
 
 # HTML to PDF generation for document templates
 gem "wicked_pdf", "~> 2.8"
